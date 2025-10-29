@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: opencodehub
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "cd opencodehub && gunicorn opencodehub.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: False
+      - key: ALLOWED_HOSTS
+        sync: false
+      - key: DATABASE_URL
+        sync: false
