@@ -347,6 +347,7 @@
             flex: 1;
             padding: 32px 40px;
             overflow-y: auto;
+            position: relative;
         }
 
         .content-header h1 {
@@ -360,8 +361,9 @@
         .projects-table {
             background: white;
             border-radius: 12px;
-            overflow: hidden;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
         }
 
         .table-header {
@@ -385,6 +387,7 @@
             align-items: center;
             transition: background 0.2s;
             cursor: pointer;
+            position: relative;
         }
 
         .project-row:hover {
@@ -446,6 +449,8 @@
             padding: 4px;
             border-radius: 4px;
             transition: all 0.2s;
+            position: relative;
+            z-index: 10;
         }
 
         .project-menu:hover {
