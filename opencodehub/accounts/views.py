@@ -165,10 +165,12 @@ def home(request):
     # Get recent activities (last 5 projects updated)
     recent_activities = []
     for project in projects[:5]:
+        # Convert UTC time to local timezone
+        local_time = timezone.localtime(project.updated_at)
         recent_activities.append({
-            'time': f"{project.updated_at.strftime('%H:%M %p')}",
+            'time': f"{local_time.strftime('%I:%M %p')}",
             'project_name': project.title,
-            'description': f'Updated {project.updated_at.strftime("%B %d, %Y")}'
+            'description': f'Updated {local_time.strftime("%B %d, %Y")}'
         })
     
     context = {

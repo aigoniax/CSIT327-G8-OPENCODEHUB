@@ -59,8 +59,10 @@ if DEBUG:
     for port in proxy_ports:
         CSRF_TRUSTED_ORIGINS.append(f"http://127.0.0.1:{port}")
     
-    # Add specific browser preview port if detected
+    # Add specific browser preview ports if detected
     CSRF_TRUSTED_ORIGINS.append("http://127.0.0.1:61958")
+    CSRF_TRUSTED_ORIGINS.append("http://127.0.0.1:65509")
+    CSRF_TRUSTED_ORIGINS.append("http://127.0.0.1:61016")
 else:
     # Production: Use environment variable for security
     CSRF_TRUSTED_ORIGINS = [
@@ -156,7 +158,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Manila'  # UTC+8 (Philippines/Hong Kong/Singapore)
 USE_I18N = True
 USE_TZ = True
 
