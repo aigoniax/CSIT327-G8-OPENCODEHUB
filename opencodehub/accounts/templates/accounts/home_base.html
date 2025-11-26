@@ -554,6 +554,112 @@
             display: inline-flex;
             margin: 0;
         }
+
+        /* Search Results Dropdown */
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1001;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .search-results.show {
+            display: block !important;
+        }
+
+        .search-result-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: #1d1d1f;
+        }
+
+        .search-result-item:hover {
+            background: #f8f9fa;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-icon {
+            width: 32px;
+            height: 32px;
+            background: #f0f0f0;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .search-result-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .search-result-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .search-result-meta {
+            font-size: 11px;
+            color: #86868b;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .search-result-type {
+            display: inline-block;
+            font-size: 9px;
+            padding: 2px 6px;
+            background: #e8eaf6;
+            color: #667eea;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .search-no-results {
+            padding: 20px 16px;
+            text-align: center;
+            color: #86868b;
+            font-size: 13px;
+        }
+
+        .search-loading {
+            padding: 16px;
+            text-align: center;
+            color: #667eea;
+            font-size: 12px;
+        }
+
+        .search-bar {
+            position: relative;
+        }
     </style>
     
     <!-- Extra CSS Block for child templates -->
@@ -569,7 +675,13 @@
             </a>
             <div class="search-bar">
                 <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="Search projects..."
+                    autocomplete="off"
+                >
+                <div id="searchResults" class="search-results"></div>
             </div>
         </div>
         <div class="navbar-right">
@@ -652,6 +764,118 @@
                 createDropdown.classList.remove('show');
             }
         });
+
+        // Navbar Search Functionality
+        let searchTimeout;
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.trim();
+                
+                clearTimeout(searchTimeout);
+                
+                if (query.length < 2) {
+                    searchResults.classList.remove('show');
+                    return;
+                }
+                
+                searchResults.innerHTML = '<div class="search-loading"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+                searchResults.classList.add('show');
+                
+                searchTimeout = setTimeout(() => {
+                    performNavbarSearch(query);
+                }, 300);
+            });
+            
+            // Close results when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.search-bar')) {
+                    searchResults.classList.remove('show');
+                }
+            });
+            
+            // Enter key - perform full page search
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const query = e.target.value.trim();
+                    if (query.length >= 2) {
+                        const currentPage = getCurrentPageType();
+                        if (currentPage === 'my') {
+                            window.location.href = `{% url 'my_projects' %}?search=${encodeURIComponent(query)}`;
+                        } else if (currentPage === 'shared') {
+                            window.location.href = `{% url 'shared_with_me' %}?search=${encodeURIComponent(query)}`;
+                        } else if (currentPage === 'browse') {
+                            window.location.href = `{% url 'browse_projects' %}?search=${encodeURIComponent(query)}`;
+                        } else {
+                            window.location.href = `{% url 'home' %}?search=${encodeURIComponent(query)}`;
+                        }
+                    }
+                }
+            });
+        }
+
+        function performNavbarSearch(query) {
+            const searchType = getCurrentPageType();
+            
+            fetch(`/api/search/?q=${encodeURIComponent(query)}&type=${searchType}`)
+                .then(response => response.json())
+                .then(data => {
+                    displayNavbarSearchResults(data);
+                })
+                .catch(error => {
+                    console.error('Search error:', error);
+                    searchResults.innerHTML = '<div class="search-no-results">Error searching</div>';
+                });
+        }
+
+        function getCurrentPageType() {
+            const currentPath = window.location.pathname;
+            
+            if (currentPath.includes('/projects/my/') || currentPath.includes('/projects/my')) return 'my';
+            if (currentPath.includes('/shared/')) return 'shared';
+            if (currentPath.includes('/browse/')) return 'browse';
+            
+            return 'all';
+        }
+
+        function displayNavbarSearchResults(data) {
+            if (data.results.length > 0) {
+                const resultsHtml = data.results.map(result => `
+                    <a href="${result.url}" class="search-result-item">
+                        <div class="search-result-icon">
+                            <i class="fas ${result.icon}"></i>
+                        </div>
+                        <div class="search-result-content">
+                            <div class="search-result-title">${escapeHtml(result.title)}</div>
+                            <div class="search-result-meta">
+                                <span class="search-result-type">${result.type}</span>
+                                <span>${result.updated_at}</span>
+                            </div>
+                        </div>
+                    </a>
+                `).join('');
+                
+                searchResults.innerHTML = resultsHtml;
+            } else {
+                searchResults.innerHTML = '<div class="search-no-results">No projects found</div>';
+            }
+            
+            searchResults.classList.add('show');
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
     </script>
 </body>
 </html>

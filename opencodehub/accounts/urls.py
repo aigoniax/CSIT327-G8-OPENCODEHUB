@@ -64,4 +64,7 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('profile/update/', views.update_profile, name='update_profile'),
     path('profile/<str:username>/', views.profile, name='user_profile'),
+
+    #
+    path('api/search/', views.search_projects, name='search_projects'),
 ]

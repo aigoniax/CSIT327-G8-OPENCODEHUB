@@ -12,6 +12,8 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from accounts.models import User
 from django.db import transaction
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
 import time
 import os
 
@@ -155,17 +157,25 @@ class CustomLoginView(LoginView):
 
 @login_required
 def home(request):
-    """Home/Dashboard page view"""
+    """Home/Dashboard page view with search"""
+    search_query = request.GET.get('search', '')
+    
     # Get user's projects
     projects = Project.objects.filter(
         owner=request.user,
         is_deleted=False  
     ).order_by('-updated_at')
-
+    
+    # Apply search filter
+    if search_query:
+        projects = projects.filter(
+            Q(title__icontains=search_query) | 
+            Q(description__icontains=search_query)
+        )
+    
     # Get recent activities (last 5 projects updated)
     recent_activities = []
     for project in projects[:5]:
-        # Convert UTC time to local timezone
         local_time = timezone.localtime(project.updated_at)
         recent_activities.append({
             'time': f"{local_time.strftime('%I:%M %p')}",
@@ -176,6 +186,7 @@ def home(request):
     context = {
         'projects': projects,
         'recent_activities': recent_activities,
+        'search_query': search_query,
     }
     
     return render(request, 'accounts/home.html', context)
@@ -444,9 +455,26 @@ def upload_version(request, project_id):
 
 @login_required
 def my_projects(request):
-    """List user's projects"""
-    projects = Project.objects.filter(owner=request.user).order_by('-created_at')
-    return render(request, 'accounts/my_projects.html', {'projects': projects})
+    """List user's projects with search"""
+    search_query = request.GET.get('search', '')
+    
+    projects = Project.objects.filter(
+        owner=request.user,
+        is_deleted=False
+    ).order_by('-created_at')
+    
+    if search_query:
+        projects = projects.filter(
+            Q(title__icontains=search_query) | 
+            Q(description__icontains=search_query)
+        )
+    
+    context = {
+        'projects': projects,
+        'search_query': search_query,
+    }
+    
+    return render(request, 'accounts/my_projects.html', context)
 
 # BROWSE PROJECTS 
 @login_required
@@ -480,7 +508,10 @@ def browse_projects(request):
 # SHARED WITH ME 
 @login_required
 def shared_with_me(request):
-    """View projects shared with the current user"""
+    """View projects shared with the current user with search"""
+
+    # Get search query from URL parameters
+    search_query = request.GET.get('search', '')
     
     # Get all SharedProject entries for current user
     shared_entries = SharedProject.objects.filter(
@@ -491,12 +522,22 @@ def shared_with_me(request):
     projects_with_permissions = []
     for entry in shared_entries:
         project = entry.project
-        project.permission = entry.permission  # Add permission to project object
+        
+        # Apply search filter
+        if search_query:
+            search_lower = search_query.lower()
+            if not (search_lower in project.title.lower() or 
+                    search_lower in project.description.lower() or
+                    search_lower in project.owner.get_full_name().lower()):
+                continue
+        
+        project.permission = entry.permission
         projects_with_permissions.append(project)
     
     context = {
         'projects': projects_with_permissions,
-        'total_count': len(projects_with_permissions)
+        'total_count': len(projects_with_permissions),
+        'search_query': search_query,
     }
     
     return render(request, 'accounts/shared_with_me.html', context)
@@ -1446,3 +1487,107 @@ def update_profile(request):
             return redirect('profile')
     
     return redirect('profile')
+
+@login_required
+@require_GET
+def search_projects(request):
+    """API endpoint for real-time project search"""
+    query = request.GET.get('q', '').strip()
+    search_type = request.GET.get('type', 'all')  # all, my, shared, browse
+    
+    if not query or len(query) < 2:
+        return JsonResponse({'results': [], 'total': 0})
+    
+    try:
+        results = []
+        
+        # MY PROJECTS SEARCH
+        if search_type in ['all', 'my']:
+            my_projects = Project.objects.filter(
+                owner=request.user,
+                is_deleted=False
+            ).filter(
+                Q(title__icontains=query) | 
+                Q(description__icontains=query)
+            ).order_by('-updated_at')[:5]
+            
+            for project in my_projects:
+                results.append({
+                    'id': project.id,
+                    'title': project.title,
+                    'description': project.description[:80] + '...' if len(project.description) > 80 else project.description,
+                    'owner': f"{project.owner.first_name} {project.owner.last_name}",
+                    'type': 'my',
+                    'url': f'/projects/{project.id}/',
+                    'icon': 'fa-folder',
+                    'updated_at': project.updated_at.strftime('%b %d, %Y'),
+                    'is_public': project.is_public,
+                })
+        
+        # SHARED PROJECTS SEARCH
+        if search_type in ['all', 'shared']:
+            shared_projects = Project.objects.filter(
+                shared_users__user=request.user
+            ).filter(
+                Q(title__icontains=query) | 
+                Q(description__icontains=query) |
+                Q(owner__first_name__icontains=query) |
+                Q(owner__last_name__icontains=query)
+            ).distinct().order_by('-updated_at')[:5]
+            
+            for project in shared_projects:
+                results.append({
+                    'id': project.id,
+                    'title': project.title,
+                    'description': project.description[:80] + '...' if len(project.description) > 80 else project.description,
+                    'owner': f"{project.owner.first_name} {project.owner.last_name}",
+                    'type': 'shared',
+                    'url': f'/projects/{project.id}/',
+                    'icon': 'fa-share-alt',
+                    'updated_at': project.updated_at.strftime('%b %d, %Y'),
+                    'is_public': project.is_public,
+                })
+        
+        # PUBLIC PROJECTS SEARCH (Browse)
+        if search_type in ['all', 'browse']:
+            public_projects = Project.objects.filter(
+                is_public=True
+            ).exclude(
+                owner=request.user
+            ).filter(
+                Q(title__icontains=query) | 
+                Q(description__icontains=query) |
+                Q(owner__first_name__icontains=query) |
+                Q(owner__last_name__icontains=query) |
+                Q(owner__username__icontains=query)
+            ).order_by('-updated_at')[:5]
+            
+            for project in public_projects:
+                results.append({
+                    'id': project.id,
+                    'title': project.title,
+                    'description': project.description[:80] + '...' if len(project.description) > 80 else project.description,
+                    'owner': f"{project.owner.first_name} {project.owner.last_name}",
+                    'type': 'public',
+                    'url': f'/projects/{project.id}/',
+                    'icon': 'fa-globe',
+                    'updated_at': project.updated_at.strftime('%b %d, %Y'),
+                    'is_public': project.is_public,
+                })
+        
+        # Remove duplicates
+        seen = set()
+        unique_results = []
+        for result in results:
+            if result['id'] not in seen:
+                seen.add(result['id'])
+                unique_results.append(result)
+        
+        return JsonResponse({
+            'results': unique_results[:10],
+            'total': len(unique_results),
+            'query': query
+        })
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e), 'results': [], 'total': 0}, status=400)
