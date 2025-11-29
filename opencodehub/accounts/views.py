@@ -158,6 +158,9 @@ class CustomLoginView(LoginView):
 @login_required
 def home(request):
     """Home/Dashboard page view with search"""
+    from django.db.models import Count
+    import json
+    
     search_query = request.GET.get('search', '')
     
     # Get user's projects
@@ -187,22 +190,64 @@ def home(request):
     total_projects_count = projects.count()
     
     # Projects shared BY the user (projects user owns that are shared with others)
-    shared_by_me_count = Project.objects.filter(
+    shared_projects = Project.objects.filter(
         owner=request.user,
         is_deleted=False,
         shared_with__isnull=False
-    ).distinct().count()
+    ).distinct().prefetch_related('shared_with', 'versions')
+    
+    shared_by_me_count = shared_projects.count()
     
     # Projects shared WITH the user (projects others shared with user)
     shared_with_me_count = SharedProject.objects.filter(user=request.user).count()
     
+    # Build contribution data for shared projects (for donut chart)
+    projects_contribution_data = {}
+    for project in shared_projects:
+        contributions = ProjectVersion.objects.filter(project=project).values(
+            'created_by__id',
+            'created_by__first_name',
+            'created_by__last_name',
+            'created_by__username'
+        ).annotate(count=Count('id'))
+        
+        total_contributions = sum(c['count'] for c in contributions)
+        
+        contributors = []
+        for contrib in contributions:
+            if total_contributions > 0:
+                percentage = round((contrib['count'] / total_contributions) * 100)
+            else:
+                percentage = 0
+            
+            name = f"{contrib['created_by__first_name']} {contrib['created_by__last_name']}".strip()
+            if not name:
+                name = contrib['created_by__username']
+            
+            contributors.append({
+                'id': contrib['created_by__id'],
+                'name': name,
+                'count': contrib['count'],
+                'percentage': percentage
+            })
+        
+        contributors.sort(key=lambda x: x['percentage'], reverse=True)
+        
+        projects_contribution_data[project.id] = {
+            'title': project.title,
+            'total': total_contributions,
+            'contributors': contributors
+        }
+    
     context = {
         'projects': projects,
+        'shared_projects': shared_projects,
         'recent_activities': recent_activities,
         'search_query': search_query,
         'total_projects_count': total_projects_count,
         'shared_by_me_count': shared_by_me_count,
         'shared_with_me_count': shared_with_me_count,
+        'projects_contribution_data': json.dumps(projects_contribution_data),
     }
     
     return render(request, 'accounts/home.html', context)

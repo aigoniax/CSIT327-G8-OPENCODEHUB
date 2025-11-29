@@ -163,6 +163,140 @@
     background: rgba(255, 255, 255, 0.3);
     transform: translateX(4px);
 }
+
+/* Contribution Chart Card */
+.contribution-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-top: 24px;
+}
+
+.contribution-header {
+    margin-bottom: 20px;
+}
+
+.contribution-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1d1d1f;
+    margin-bottom: 12px;
+}
+
+.project-selector {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1d1d1f;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.project-selector:hover {
+    border-color: #667eea;
+}
+
+.project-selector:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.chart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.donut-chart {
+    position: relative;
+    width: 180px;
+    height: 180px;
+}
+
+.donut-chart svg {
+    transform: rotate(-90deg);
+}
+
+.donut-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.donut-center-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1d1d1f;
+}
+
+.donut-center-label {
+    font-size: 11px;
+    color: #86868b;
+    text-transform: uppercase;
+}
+
+.contribution-legend {
+    margin-top: 20px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.legend-item:last-child {
+    border-bottom: none;
+}
+
+.legend-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.legend-name {
+    font-size: 14px;
+    color: #1d1d1f;
+}
+
+.legend-percentage {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1d1d1f;
+}
+
+.no-data-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: #86868b;
+}
+
+.no-data-message i {
+    font-size: 32px;
+    margin-bottom: 12px;
+    opacity: 0.3;
+}
+
+.no-data-message p {
+    font-size: 13px;
+}
 </style>
 
 <div class="main-layout">
@@ -342,9 +476,41 @@
         {% endif %}
     </div>
 
-    <!-- Right Sidebar - Timeline -->
+    <!-- Right Sidebar -->
     <div class="right-sidebar">
-        <div class="timeline-header">Latest work</div>
+        <!-- Team Contributions Chart -->
+        {% if shared_projects %}
+        <div class="contribution-card">
+            <div class="contribution-header">
+                <div class="contribution-title">Team Contributions</div>
+                <select id="projectSelector" class="project-selector" onchange="updateChart()">
+                    {% for project in shared_projects %}
+                    <option value="{{ project.id }}">{{ project.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="chart-container">
+                <div class="donut-chart" id="donutChart">
+                    <svg width="180" height="180" viewBox="0 0 180 180">
+                        <circle cx="90" cy="90" r="70" fill="none" stroke="#f0f0f0" stroke-width="20"/>
+                        <g id="chartSegments"></g>
+                    </svg>
+                    <div class="donut-center">
+                        <div class="donut-center-value" id="totalContributions">0</div>
+                        <div class="donut-center-label">Total</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contribution-legend" id="contributionLegend">
+                <!-- Legend items will be populated by JavaScript -->
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Timeline -->
+        <div class="timeline-header" style="margin-top: {% if shared_projects %}24px{% else %}0{% endif %};">Latest work</div>
         
         {% if recent_activities %}
         <div class="timeline">
@@ -697,6 +863,127 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('deleteConfirmModal').addEventListener('click', function(e) {
         if (e.target === this) closeDeleteModal();
     });
+});
+
+// ============ CONTRIBUTION DONUT CHART ============
+// Contribution data from Django
+const contributionData = {{ projects_contribution_data|safe }};
+
+// Color palette for the donut chart
+const chartColors = [
+    '#667eea', // Purple
+    '#38bdf8', // Light Blue
+    '#34d399', // Green
+    '#a78bfa', // Light Purple
+    '#fb923c', // Orange
+    '#f472b6', // Pink
+    '#facc15', // Yellow
+    '#94a3b8', // Gray
+];
+
+function updateChart() {
+    const selector = document.getElementById('projectSelector');
+    if (!selector) return;
+    
+    const projectId = selector.value;
+    const projectData = contributionData[projectId];
+    
+    if (!projectData || projectData.contributors.length === 0) {
+        renderEmptyChart();
+        return;
+    }
+    
+    renderDonutChart(projectData);
+}
+
+function renderDonutChart(data) {
+    const segmentsGroup = document.getElementById('chartSegments');
+    const legendContainer = document.getElementById('contributionLegend');
+    const totalElement = document.getElementById('totalContributions');
+    
+    if (!segmentsGroup || !legendContainer || !totalElement) return;
+    
+    // Clear existing content
+    segmentsGroup.innerHTML = '';
+    legendContainer.innerHTML = '';
+    
+    // Update total
+    totalElement.textContent = data.total;
+    
+    const contributors = data.contributors;
+    const radius = 70;
+    const circumference = 2 * Math.PI * radius;
+    let currentOffset = 0;
+    
+    contributors.forEach((contributor, index) => {
+        const percentage = contributor.percentage;
+        const segmentLength = (percentage / 100) * circumference;
+        const color = chartColors[index % chartColors.length];
+        
+        // Create SVG segment
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', '90');
+        circle.setAttribute('cy', '90');
+        circle.setAttribute('r', radius.toString());
+        circle.setAttribute('fill', 'none');
+        circle.setAttribute('stroke', color);
+        circle.setAttribute('stroke-width', '20');
+        circle.setAttribute('stroke-dasharray', `${segmentLength} ${circumference - segmentLength}`);
+        circle.setAttribute('stroke-dashoffset', (-currentOffset).toString());
+        circle.style.transition = 'stroke-dasharray 0.5s ease, stroke-dashoffset 0.5s ease';
+        
+        segmentsGroup.appendChild(circle);
+        
+        currentOffset += segmentLength;
+        
+        // Create legend item
+        const legendItem = document.createElement('div');
+        legendItem.className = 'legend-item';
+        legendItem.innerHTML = `
+            <div class="legend-left">
+                <div class="legend-color" style="background-color: ${color};"></div>
+                <span class="legend-name">${escapeHtml(contributor.name)}</span>
+            </div>
+            <span class="legend-percentage">${percentage}%</span>
+        `;
+        legendContainer.appendChild(legendItem);
+    });
+}
+
+function renderEmptyChart() {
+    const segmentsGroup = document.getElementById('chartSegments');
+    const legendContainer = document.getElementById('contributionLegend');
+    const totalElement = document.getElementById('totalContributions');
+    
+    if (!segmentsGroup || !legendContainer || !totalElement) return;
+    
+    segmentsGroup.innerHTML = '';
+    totalElement.textContent = '0';
+    
+    legendContainer.innerHTML = `
+        <div class="no-data-message">
+            <i class="fas fa-chart-pie"></i>
+            <p>No contributions yet for this project</p>
+        </div>
+    `;
+}
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+// Initialize chart on page load
+document.addEventListener('DOMContentLoaded', function() {
+    if (Object.keys(contributionData).length > 0) {
+        updateChart();
+    }
 });
 </script>
 {% endblock %}
