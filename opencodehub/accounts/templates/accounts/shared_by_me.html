@@ -1,0 +1,698 @@
+{% extends 'accounts/home_base.html' %}
+
+{% block title %}Shared By Me - OpenCodeHub{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: #f5f5f7 !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .dashboard-container {
+        display: flex;
+        min-height: calc(100vh - 76px);
+        padding: 0;
+        margin: 0;
+        background: #f5f5f7;
+    }
+
+    /* Left Sidebar */
+    .left-sidebar {
+        width: 200px;
+        background: white;
+        border-right: 1px solid #e5e5e5;
+        padding: 20px 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar-section {
+        margin-bottom: 24px;
+    }
+
+    .sidebar-section-title {
+        font-size: 11px;
+        font-weight: 600;
+        color: #86868b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 0 16px;
+        margin-bottom: 8px;
+    }
+
+    .sidebar-item {
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #1d1d1f;
+        text-decoration: none;
+        transition: all 0.2s;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .sidebar-item:hover {
+        background: #f5f5f7;
+        color: #667eea;
+    }
+
+    .sidebar-item.active {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        color: #667eea;
+        font-weight: 500;
+        border-left: 3px solid #667eea;
+    }
+
+    .sidebar-item i {
+        width: 20px;
+        font-size: 16px;
+    }
+
+    /* Main Content */
+    .main-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 32px 40px;
+        background: #f5f5f7;
+    }
+
+    .content-header {
+        margin-bottom: 32px;
+    }
+
+    .content-header h1 {
+        font-size: 32px;
+        font-weight: 700;
+        color: #1d1d1f;
+        margin: 0 0 8px 0;
+    }
+
+    .content-header p {
+        color: #86868b;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    /* Projects Table */
+    .projects-table {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .table-header {
+        display: grid;
+        grid-template-columns: 40px 2fr 180px 150px 120px 40px;
+        padding: 16px 20px;
+        background: #fafafa;
+        border-bottom: 1px solid #e5e5e5;
+        font-size: 12px;
+        font-weight: 600;
+        color: #86868b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .project-row {
+        display: grid;
+        grid-template-columns: 40px 2fr 180px 150px 120px 40px;
+        padding: 16px 20px;
+        border-bottom: 1px solid #f0f0f0;
+        align-items: center;
+        transition: background 0.2s;
+        cursor: pointer;
+    }
+
+    .project-row:hover {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    }
+
+    .project-row:last-child {
+        border-bottom: none;
+    }
+
+    .project-icon {
+        font-size: 20px;
+        color: #667eea;
+    }
+
+    .project-name {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #1d1d1f;
+    }
+
+    .shared-with-users {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .user-avatars {
+        display: flex;
+        align-items: center;
+    }
+
+    .user-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 600;
+        margin-left: -8px;
+        border: 2px solid white;
+    }
+
+    .user-avatar:first-child {
+        margin-left: 0;
+    }
+
+    .more-users {
+        background: #86868b;
+    }
+
+    .shared-count {
+        font-size: 12px;
+        color: #86868b;
+        margin-left: 8px;
+    }
+
+    .project-time {
+        font-size: 13px;
+        color: #86868b;
+    }
+
+    .project-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 12px;
+        background: #e8f0fe;
+        color: #667eea;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .badge-public {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .badge-private {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .project-menu {
+        color: #86868b;
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 4px;
+        transition: all 0.2s;
+    }
+
+    .project-menu:hover {
+        background: #f0f0f0;
+        color: #667eea;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #86868b;
+    }
+
+    .empty-state i {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.3;
+        color: #667eea;
+    }
+
+    .empty-state h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #1d1d1f;
+    }
+
+    .empty-state p {
+        font-size: 14px;
+    }
+
+    /* Back button */
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #667eea;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 16px;
+        transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+        color: #5a6fd8;
+    }
+
+    /* Content Layout with Chart */
+    .content-layout {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 24px;
+    }
+
+    /* Contribution Chart Card */
+    .contribution-card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        height: fit-content;
+        position: sticky;
+        top: 20px;
+    }
+
+    .contribution-header {
+        margin-bottom: 20px;
+    }
+
+    .contribution-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1d1d1f;
+        margin-bottom: 12px;
+    }
+
+    .project-selector {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #1d1d1f;
+        background: white;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .project-selector:hover {
+        border-color: #667eea;
+    }
+
+    .project-selector:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .chart-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px 0;
+    }
+
+    .donut-chart {
+        position: relative;
+        width: 180px;
+        height: 180px;
+    }
+
+    .donut-chart svg {
+        transform: rotate(-90deg);
+    }
+
+    .donut-center {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+
+    .donut-center-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1d1d1f;
+    }
+
+    .donut-center-label {
+        font-size: 11px;
+        color: #86868b;
+        text-transform: uppercase;
+    }
+
+    .contribution-legend {
+        margin-top: 20px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .legend-item:last-child {
+        border-bottom: none;
+    }
+
+    .legend-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .legend-color {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+
+    .legend-name {
+        font-size: 14px;
+        color: #1d1d1f;
+    }
+
+    .legend-percentage {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1d1d1f;
+    }
+
+    .no-data-message {
+        text-align: center;
+        padding: 40px 20px;
+        color: #86868b;
+    }
+
+    .no-data-message i {
+        font-size: 32px;
+        margin-bottom: 12px;
+        opacity: 0.3;
+    }
+
+    .no-data-message p {
+        font-size: 13px;
+    }
+
+    @media (max-width: 1024px) {
+        .content-layout {
+            grid-template-columns: 1fr;
+        }
+        
+        .contribution-card {
+            position: static;
+        }
+    }
+</style>
+
+<div class="dashboard-container">
+    <!-- Left Sidebar -->
+    <div class="left-sidebar">
+        <div class="create-btn" onclick="toggleCreateDropdown()">
+            <i class="fas fa-plus"></i>
+            Create
+            <div class="create-dropdown" id="createDropdown">
+                <a href="{% url 'create_project' %}" class="create-dropdown-item">New Project</a>
+                <a href="#" class="create-dropdown-item" onclick="event.preventDefault(); openUploadFileModal()">Upload File</a>
+                <a href="#" class="create-dropdown-item" onclick="event.preventDefault(); openUploadFolderModal()">Upload Folder</a>
+                <a href="{% url 'create_document' %}" class="create-dropdown-item">Document</a>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Workspace</div>
+            <a href="{% url 'home' %}" class="sidebar-item">
+                <i class="fas fa-home"></i>
+                Home
+            </a>
+            <a href="{% url 'my_projects' %}" class="sidebar-item">
+                <i class="fas fa-briefcase"></i>
+                My work
+            </a>
+            <a href="{% url 'shared_with_me' %}" class="sidebar-item">
+                <i class="fas fa-users"></i>
+                Shared with me
+            </a>
+            <a href="{% url 'browse_projects' %}" class="sidebar-item">
+                <i class="fas fa-globe"></i>
+                Browse
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <a href="{% url 'home' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+        
+        <div class="content-header">
+            <h1><i class="fas fa-share-alt"></i> Shared By Me</h1>
+            <p>Projects you've shared with others ({{ total_count }} project{{ total_count|pluralize }})</p>
+        </div>
+
+        {% if projects %}
+        <div class="content-layout">
+            <!-- Projects Table -->
+            <div class="projects-table">
+                <div class="table-header">
+                    <div></div>
+                    <div>PROJECT NAME</div>
+                    <div>SHARED WITH</div>
+                    <div>LAST MODIFIED</div>
+                    <div>VISIBILITY</div>
+                    <div></div>
+                </div>
+
+                {% for project in projects %}
+                <div class="project-row" data-href="{% url 'project_detail' project.id %}">
+                    <div class="project-icon">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                    <div class="project-name">
+                        {{ project.title }}
+                    </div>
+                    <div class="shared-with-users">
+                        <div class="user-avatars">
+                            {% for shared_user in project.shared_with.all|slice:":3" %}
+                                <div class="user-avatar" title="{{ shared_user.username }}">
+                                    {{ shared_user.first_name.0|upper }}{{ shared_user.last_name.0|upper }}
+                                </div>
+                            {% endfor %}
+                            {% if project.shared_with.all.count > 3 %}
+                                <div class="user-avatar more-users">
+                                    +{{ project.shared_with.all.count|add:"-3" }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <span class="shared-count">{{ project.shared_with.all.count }} user{{ project.shared_with.all.count|pluralize }}</span>
+                    </div>
+                    <div class="project-time">{{ project.updated_at|timesince }} ago</div>
+                    <div>
+                        {% if project.is_public %}
+                        <span class="project-badge badge-public">
+                            <i class="fas fa-globe"></i>
+                            Public
+                        </span>
+                        {% else %}
+                        <span class="project-badge badge-private">
+                            <i class="fas fa-lock"></i>
+                            Private
+                        </span>
+                        {% endif %}
+                    </div>
+                    <div class="project-menu">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Contribution Chart Card -->
+            <div class="contribution-card">
+                <div class="contribution-header">
+                    <div class="contribution-title">Team Contributions</div>
+                    <select id="projectSelector" class="project-selector" onchange="updateChart()">
+                        {% for project in projects %}
+                        <option value="{{ project.id }}">{{ project.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="chart-container">
+                    <div class="donut-chart" id="donutChart">
+                        <svg width="180" height="180" viewBox="0 0 180 180">
+                            <circle cx="90" cy="90" r="70" fill="none" stroke="#f0f0f0" stroke-width="20"/>
+                            <g id="chartSegments"></g>
+                        </svg>
+                        <div class="donut-center">
+                            <div class="donut-center-value" id="totalContributions">0</div>
+                            <div class="donut-center-label">Total</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contribution-legend" id="contributionLegend">
+                    <!-- Legend items will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="projects-table">
+            <div class="empty-state">
+                <i class="fas fa-share-alt"></i>
+                <h3>No shared projects</h3>
+                <p>You haven't shared any projects with others yet. Share a project to collaborate!</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('.project-row').forEach(row => {
+    row.style.cursor = 'pointer';
+    row.addEventListener('click', () => {
+        window.location.href = row.dataset.href;
+    });
+});
+
+// Contribution data from Django
+const contributionData = {{ projects_contribution_data|safe }};
+
+// Color palette for the donut chart
+const chartColors = [
+    '#667eea', // Purple
+    '#38bdf8', // Light Blue
+    '#34d399', // Green
+    '#a78bfa', // Light Purple
+    '#fb923c', // Orange
+    '#f472b6', // Pink
+    '#facc15', // Yellow
+    '#94a3b8', // Gray
+];
+
+function updateChart() {
+    const selector = document.getElementById('projectSelector');
+    if (!selector) return;
+    
+    const projectId = selector.value;
+    const projectData = contributionData[projectId];
+    
+    if (!projectData || projectData.contributors.length === 0) {
+        renderEmptyChart();
+        return;
+    }
+    
+    renderDonutChart(projectData);
+}
+
+function renderDonutChart(data) {
+    const segmentsGroup = document.getElementById('chartSegments');
+    const legendContainer = document.getElementById('contributionLegend');
+    const totalElement = document.getElementById('totalContributions');
+    
+    if (!segmentsGroup || !legendContainer || !totalElement) return;
+    
+    // Clear existing content
+    segmentsGroup.innerHTML = '';
+    legendContainer.innerHTML = '';
+    
+    // Update total
+    totalElement.textContent = data.total;
+    
+    const contributors = data.contributors;
+    const radius = 70;
+    const circumference = 2 * Math.PI * radius;
+    let currentOffset = 0;
+    
+    contributors.forEach((contributor, index) => {
+        const percentage = contributor.percentage;
+        const segmentLength = (percentage / 100) * circumference;
+        const color = chartColors[index % chartColors.length];
+        
+        // Create SVG segment
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', '90');
+        circle.setAttribute('cy', '90');
+        circle.setAttribute('r', radius.toString());
+        circle.setAttribute('fill', 'none');
+        circle.setAttribute('stroke', color);
+        circle.setAttribute('stroke-width', '20');
+        circle.setAttribute('stroke-dasharray', `${segmentLength} ${circumference - segmentLength}`);
+        circle.setAttribute('stroke-dashoffset', (-currentOffset).toString());
+        circle.style.transition = 'stroke-dasharray 0.5s ease, stroke-dashoffset 0.5s ease';
+        
+        segmentsGroup.appendChild(circle);
+        
+        currentOffset += segmentLength;
+        
+        // Create legend item
+        const legendItem = document.createElement('div');
+        legendItem.className = 'legend-item';
+        legendItem.innerHTML = `
+            <div class="legend-left">
+                <div class="legend-color" style="background-color: ${color};"></div>
+                <span class="legend-name">${escapeHtml(contributor.name)}</span>
+            </div>
+            <span class="legend-percentage">${percentage}%</span>
+        `;
+        legendContainer.appendChild(legendItem);
+    });
+}
+
+function renderEmptyChart() {
+    const segmentsGroup = document.getElementById('chartSegments');
+    const legendContainer = document.getElementById('contributionLegend');
+    const totalElement = document.getElementById('totalContributions');
+    
+    if (!segmentsGroup || !legendContainer || !totalElement) return;
+    
+    segmentsGroup.innerHTML = '';
+    totalElement.textContent = '0';
+    
+    legendContainer.innerHTML = `
+        <div class="no-data-message">
+            <i class="fas fa-chart-pie"></i>
+            <p>No contributions yet for this project</p>
+        </div>
+    `;
+}
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+// Initialize chart on page load
+document.addEventListener('DOMContentLoaded', function() {
+    if (Object.keys(contributionData).length > 0) {
+        updateChart();
+    }
+});
+</script>
+{% endblock %}

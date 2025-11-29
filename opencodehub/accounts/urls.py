@@ -32,6 +32,9 @@ urlpatterns = [
     # Shared with me
     path('shared/', views.shared_with_me, name='shared_with_me'),
     
+    # Shared by me
+    path('shared-by-me/', views.shared_by_me, name='shared_by_me'),
+    
     # Share/Unshare
     path('project/<int:project_id>/share/', views.share_project, name='share_project'),
     path('project/<int:project_id>/unshare/<int:user_id>/', views.unshare_project, name='unshare_project'),
