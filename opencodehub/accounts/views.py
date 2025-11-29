@@ -183,10 +183,26 @@ def home(request):
             'description': f'Updated {local_time.strftime("%B %d, %Y")}'
         })
     
+    # Count for stat cards
+    total_projects_count = projects.count()
+    
+    # Projects shared BY the user (projects user owns that are shared with others)
+    shared_by_me_count = Project.objects.filter(
+        owner=request.user,
+        is_deleted=False,
+        shared_with__isnull=False
+    ).distinct().count()
+    
+    # Projects shared WITH the user (projects others shared with user)
+    shared_with_me_count = SharedProject.objects.filter(user=request.user).count()
+    
     context = {
         'projects': projects,
         'recent_activities': recent_activities,
         'search_query': search_query,
+        'total_projects_count': total_projects_count,
+        'shared_by_me_count': shared_by_me_count,
+        'shared_with_me_count': shared_with_me_count,
     }
     
     return render(request, 'accounts/home.html', context)
@@ -541,6 +557,79 @@ def shared_with_me(request):
     }
     
     return render(request, 'accounts/shared_with_me.html', context)
+
+# SHARED BY ME
+@login_required
+def shared_by_me(request):
+    """View projects that the current user has shared with others"""
+    from django.db.models import Count
+    import json
+    
+    # Get search query from URL parameters
+    search_query = request.GET.get('search', '')
+    
+    # Get all projects owned by user that have been shared with others
+    projects = Project.objects.filter(
+        owner=request.user,
+        is_deleted=False,
+        shared_with__isnull=False  # Only projects that have been shared
+    ).distinct().prefetch_related('shared_with', 'versions').order_by('-updated_at')
+    
+    # Apply search filter
+    if search_query:
+        projects = projects.filter(
+            Q(title__icontains=search_query) | 
+            Q(description__icontains=search_query)
+        )
+    
+    # Build contribution data for each project
+    projects_contribution_data = {}
+    for project in projects:
+        # Get all versions/contributions for this project
+        contributions = ProjectVersion.objects.filter(project=project).values(
+            'created_by__id',
+            'created_by__first_name',
+            'created_by__last_name',
+            'created_by__username'
+        ).annotate(count=Count('id'))
+        
+        total_contributions = sum(c['count'] for c in contributions)
+        
+        contributors = []
+        for contrib in contributions:
+            if total_contributions > 0:
+                percentage = round((contrib['count'] / total_contributions) * 100)
+            else:
+                percentage = 0
+            
+            name = f"{contrib['created_by__first_name']} {contrib['created_by__last_name']}".strip()
+            if not name:
+                name = contrib['created_by__username']
+            
+            contributors.append({
+                'id': contrib['created_by__id'],
+                'name': name,
+                'count': contrib['count'],
+                'percentage': percentage
+            })
+        
+        # Sort by percentage descending
+        contributors.sort(key=lambda x: x['percentage'], reverse=True)
+        
+        projects_contribution_data[project.id] = {
+            'title': project.title,
+            'total': total_contributions,
+            'contributors': contributors
+        }
+    
+    context = {
+        'projects': projects,
+        'total_count': projects.count(),
+        'search_query': search_query,
+        'projects_contribution_data': json.dumps(projects_contribution_data),
+    }
+    
+    return render(request, 'accounts/shared_by_me.html', context)
 
 # SHARE PROJECT 
 @login_required
