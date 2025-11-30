@@ -70,4 +70,7 @@ urlpatterns = [
 
     #
     path('api/search/', views.search_projects, name='search_projects'),
+
+    #
+    path('projects/<int:project_id>/comments/<int:comment_id>/delete/', views.delete_comment, name='delete_comment'),
 ]

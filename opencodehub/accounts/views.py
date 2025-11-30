@@ -366,6 +366,40 @@ def project_detail(request, project_id):
     return render(request, 'accounts/project_detail.html', context)
 
 @login_required
+def delete_comment(request, project_id, comment_id):
+    """Delete a comment from a project"""
+    project = get_object_or_404(Project, id=project_id)
+    comment = get_object_or_404(Comment, id=comment_id, project=project)
+    
+    # Check permissions - only comment author or project owner can delete
+    if request.user != comment.author and request.user != project.owner:
+        messages.error(request, '❌ You do not have permission to delete this comment.')
+        return redirect('project_detail', project_id=project.id)
+    
+    if request.method == 'POST':
+        try:
+            comment_author = comment.author.username
+            comment_preview = comment.content[:50] + '...' if len(comment.content) > 50 else comment.content
+            
+            # Delete the comment
+            comment.delete()
+            
+            # Create version history entry
+            create_project_version(
+                project=project,
+                user=request.user,
+                action='comment_added',  # Using existing action type
+                description=f'Comment by {comment_author} was deleted: "{comment_preview}"'
+            )
+            
+            messages.success(request, '✅ Comment deleted successfully!')
+            
+        except Exception as e:
+            messages.error(request, f'❌ Failed to delete comment: {str(e)}')
+    
+    return redirect('project_detail', project_id=project.id)
+
+@login_required
 def upload_file(request, project_id):
     """Upload file to project with validation"""
     from django.conf import settings

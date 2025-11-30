@@ -281,6 +281,18 @@
                       <i class="fas fa-clock"></i> {{ comment.created_at|timesince }} ago
                     </small>
                   </div>
+
+                  <!-- DELETE BUTTON -->
+                  {% if comment.author == user or project.owner == user %}
+                  <button 
+                    type="button" 
+                    class="btn btn-sm btn-outline-danger" 
+                    style="border-radius: 6px;"
+                    onclick="showDeleteCommentModal({{ comment.id }}, '{{ comment.author.username }}')"
+                    title="Delete comment">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                  {% endif %}
                 </div>
                 <p class="mb-0 mt-2" style="white-space: pre-wrap;">{{ comment.content }}</p>
               </div>
@@ -674,7 +686,21 @@ function showDeleteModal(fileId, fileName) {
   modal.show();
 }
 
-// ===== COMMENT FORM ENHANCEMENTS =====
+// Show delete comment confirmation modal
+function showDeleteCommentModal(commentId, authorUsername) {
+  // Set the author name
+  document.getElementById('deleteCommentAuthor').textContent = authorUsername;
+  
+  // Set the form action URL
+  const form = document.getElementById('deleteCommentForm');
+  form.action = `/projects/{{ project.id }}/comments/${commentId}/delete/`;
+  
+  // Show the modal
+  const modal = new bootstrap.Modal(document.getElementById('deleteCommentModal'));
+  modal.show();
+}
+
+// ===== COMMENT FORM =====
 
 // Simple character counter (informational only)
 const commentText = document.getElementById('commentText');
@@ -861,6 +887,40 @@ document.head.appendChild(style);
           {% csrf_token %}
           <button type="submit" class="btn btn-danger" style="border-radius: 10px;">
             <i class="fas fa-trash"></i> Delete File
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Comment Modal -->
+<div class="modal fade" id="deleteCommentModal" tabindex="-1" aria-labelledby="deleteCommentModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius: 15px; border: none;">
+      <div class="modal-header" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white; border-radius: 15px 15px 0 0;">
+        <h5 class="modal-title" id="deleteCommentModalLabel">
+          <i class="fas fa-exclamation-triangle"></i> Delete Comment
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="padding: 2rem;">
+        <p class="mb-3">Are you sure you want to delete this comment?</p>
+        <div class="alert alert-warning" role="alert" style="border-radius: 10px;">
+          <strong>By:</strong> <span id="deleteCommentAuthor"></span>
+        </div>
+        <p class="text-muted small mb-0">
+          <i class="fas fa-info-circle"></i> This action cannot be undone.
+        </p>
+      </div>
+      <div class="modal-footer" style="border-top: none; padding: 1rem 2rem 2rem 2rem;">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 10px;">
+          <i class="fas fa-times"></i> Cancel
+        </button>
+        <form id="deleteCommentForm" method="POST" style="display: inline; margin: 0;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger" style="border-radius: 10px;">
+            <i class="fas fa-trash"></i> Delete Comment
           </button>
         </form>
       </div>
