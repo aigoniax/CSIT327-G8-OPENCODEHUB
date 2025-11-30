@@ -1068,10 +1068,231 @@
 </div>
 
 <script>
+// Profile Form Validation
+const VALIDATION_RULES = {
+    bio: {
+        maxLength: 500,
+        errorMessage: 'Bio cannot exceed 500 characters'
+    },
+    profilePicture: {
+        maxSize: 5 * 1024 * 1024, // 5MB
+        allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'],
+        errorMessage: {
+            size: 'Profile picture must be smaller than 5MB',
+            type: 'Profile picture must be an image (JPEG, PNG, GIF, or WebP)'
+        }
+    }
+};
+
+// Initialize form validation when modal opens
 function openEditModal() {
     document.getElementById('editModal').classList.add('show');
     document.body.style.overflow = 'hidden';
+    
+    // Attach event listeners for real-time validation
+    attachValidationListeners();
 }
+
+// Attach real-time validation listeners
+function attachValidationListeners() {
+    const bioField = document.getElementById('bio');
+    const pictureField = document.querySelector('input[name="profile_picture"]');
+    
+    // Bio character counter
+    if (bioField) {
+        bioField.addEventListener('input', function() {
+            validateBio(this);
+        });
+        
+        // Initial validation
+        validateBio(bioField);
+    }
+    
+    // Profile picture validation
+    if (pictureField) {
+        pictureField.addEventListener('change', function() {
+            validateProfilePicture(this);
+        });
+    }
+}
+
+// Validate bio field
+function validateBio(field) {
+    const maxLength = VALIDATION_RULES.bio.maxLength;
+    const currentLength = field.value.length;
+    
+    // Create or update character counter
+    let counter = document.getElementById('bioCharCounter');
+    if (!counter) {
+        counter = document.createElement('div');
+        counter.id = 'bioCharCounter';
+        counter.style.cssText = `
+            margin-top: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        `;
+        field.parentNode.insertBefore(counter, field.nextSibling);
+    }
+    
+    const remaining = maxLength - currentLength;
+    const percentage = (currentLength / maxLength) * 100;
+    
+    // Update counter text and color
+    if (remaining < 0) {
+        counter.textContent = `❌ ${Math.abs(remaining)} characters over limit`;
+        counter.style.color = '#f5576c';
+        field.style.borderColor = '#f5576c';
+        field.style.boxShadow = '0 0 0 4px rgba(245, 87, 108, 0.15)';
+        return false;
+    } else if (remaining < 50) {
+        counter.textContent = `⚠️ ${remaining} characters remaining`;
+        counter.style.color = '#f59e0b';
+        field.style.borderColor = '#f59e0b';
+    } else {
+        counter.textContent = `✅ ${remaining} characters remaining`;
+        counter.style.color = '#10b981';
+        field.style.borderColor = '#e5e7eb';
+        field.style.boxShadow = '';
+    }
+    
+    return remaining >= 0;
+}
+
+// Validate profile picture
+function validateProfilePicture(field) {
+    if (!field.files || field.files.length === 0) {
+        clearPictureError();
+        return true;
+    }
+    
+    const file = field.files[0];
+    const maxSize = VALIDATION_RULES.profilePicture.maxSize;
+    const allowedTypes = VALIDATION_RULES.profilePicture.allowedTypes;
+    const errorMessages = VALIDATION_RULES.profilePicture.errorMessage;
+    
+    let errorMsg = null;
+    
+    // Check file type
+    if (!allowedTypes.includes(file.type)) {
+        errorMsg = errorMessages.type;
+        showPictureError(errorMsg);
+        field.value = '';
+        return false;
+    }
+    
+    // Check file size
+    if (file.size > maxSize) {
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        errorMsg = `File is ${sizeMB}MB. ${errorMessages.size}`;
+        showPictureError(errorMsg);
+        field.value = '';
+        return false;
+    }
+    
+    // If valid, show preview and clear error
+    clearPictureError();
+    showPicturePreview(file);
+    return true;
+}
+
+// Show picture preview
+function showPicturePreview(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const preview = document.querySelector('.current-picture');
+        if (preview) {
+            preview.src = e.target.result;
+            preview.style.animation = 'fadeIn 0.3s ease';
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+// Show picture error message
+function showPictureError(message) {
+    let errorDiv = document.getElementById('pictureError');
+    if (!errorDiv) {
+        errorDiv = document.createElement('div');
+        errorDiv.id = 'pictureError';
+        const fileInput = document.querySelector('input[name="profile_picture"]');
+        fileInput.parentNode.insertBefore(errorDiv, fileInput.nextSibling);
+    }
+    
+    errorDiv.innerHTML = `
+        <div style="
+            margin-top: 12px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(245, 87, 108, 0.1), rgba(239, 68, 68, 0.1));
+            border: 2px solid #f5576c;
+            border-radius: 12px;
+            color: #f5576c;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        ">
+            <i class="fas fa-exclamation-circle"></i>
+            ${message}
+        </div>
+    `;
+}
+
+// Clear picture error
+function clearPictureError() {
+    const errorDiv = document.getElementById('pictureError');
+    if (errorDiv) {
+        errorDiv.remove();
+    }
+}
+
+// Validate entire form before submission
+function validateEditForm(form) {
+    const bioField = document.getElementById('bio');
+    const pictureField = document.querySelector('input[name="profile_picture"]');
+    
+    let isValid = true;
+    
+    // Validate bio
+    if (bioField && !validateBio(bioField)) {
+        isValid = false;
+    }
+    
+    // Validate picture if one is selected
+    if (pictureField && pictureField.files.length > 0) {
+        if (!validateProfilePicture(pictureField)) {
+            isValid = false;
+        }
+    }
+    
+    if (!isValid) {
+        alert('Please fix the errors in the form before submitting.');
+    }
+    
+    return isValid;
+}
+
+// Override form submission
+document.addEventListener('DOMContentLoaded', function() {
+    const editForm = document.querySelector('#editModal form');
+    if (editForm) {
+        editForm.addEventListener('submit', function(e) {
+            if (!validateEditForm(this)) {
+                e.preventDefault();
+            }
+        });
+    }
+});
+
+// Fade in animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+`;
+document.head.appendChild(style);
 
 function closeEditModal() {
     document.getElementById('editModal').classList.remove('show');
