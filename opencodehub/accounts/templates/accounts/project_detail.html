@@ -251,48 +251,142 @@
     </div>
   </div>
 
-  <!-- Comments Section -->
-  <div class="card shadow-sm mb-4" style="border-radius: 15px;">
-    <div class="card-body">
-      <h5 class="card-title">
-        <i class="fas fa-comments text-primary"></i> Comments
-      </h5>
-      {% if comments %}
-        <ul class="list-group list-group-flush mb-3">
-          {% for comment in comments %}
-            <li class="list-group-item">
-              <div class="d-flex align-items-start gap-2">
-                <div class="user-avatar-small">
-                  {{ comment.author.first_name.0|upper }}
-                </div>
-                <div class="flex-grow-1">
-                  <strong>{{ comment.author.username }}</strong>
-                  <small class="text-muted">{{ comment.created_at|timesince }} ago</small>
-                  <p class="mb-0 mt-1">{{ comment.content }}</p>
-                </div>
-              </div>
-            </li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <p class="text-muted">No comments yet. Be the first to comment!</p>
+<!-- Comments Section -->
+<div class="card shadow-sm mb-4" style="border-radius: 15px;" id="comments-section">
+  <div class="card-body">
+    <h5 class="card-title">
+      <i class="fas fa-comments text-primary"></i> Comments 
+      {% if comments_count > 0 %}
+        <span class="badge bg-primary rounded-pill">{{ comments_count }}</span>
       {% endif %}
+    </h5>
+    
+    {% if comments %}
+      <ul class="list-group list-group-flush mb-3">
+        {% for comment in comments %}
+          <li class="list-group-item" style="border-radius: 10px; margin-bottom: 8px;">
+            <div class="d-flex align-items-start gap-2">
+              <div class="user-avatar-small">
+                {{ comment.author.first_name.0|upper }}
+              </div>
+              <div class="flex-grow-1">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <strong>{{ comment.author.username }}</strong>
+                    {% if comment.author == project.owner %}
+                      <span class="badge bg-success" style="font-size: 0.7rem; border-radius: 6px;">Owner</span>
+                    {% endif %}
+                    <br>
+                    <small class="text-muted">
+                      <i class="fas fa-clock"></i> {{ comment.created_at|timesince }} ago
+                    </small>
+                  </div>
+                </div>
+                <p class="mb-0 mt-2" style="white-space: pre-wrap;">{{ comment.content }}</p>
+              </div>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+      
+      <!-- Pagination Controls -->
+      {% if comments.has_other_pages %}
+      <nav aria-label="Comments pagination" class="mb-3">
+        <ul class="pagination pagination-sm justify-content-center mb-0">
+          {% if comments.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ comments.previous_page_number }}#comments-section" style="border-radius: 8px 0 0 8px;">
+              <i class="fas fa-chevron-left"></i> Previous
+            </a>
+          </li>
+          {% endif %}
+          
+          {% for num in comments.paginator.page_range %}
+            {% if comments.number == num %}
+            <li class="page-item active">
+              <span class="page-link">{{ num }}</span>
+            </li>
+            {% elif num > comments.number|add:'-3' and num < comments.number|add:'3' %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ num }}#comments-section">{{ num }}</a>
+            </li>
+            {% elif num == 1 or num == comments.paginator.num_pages %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ num }}#comments-section">{{ num }}</a>
+            </li>
+            {% elif num == comments.number|add:'-3' or num == comments.number|add:'3' %}
+            <li class="page-item disabled">
+              <span class="page-link">...</span>
+            </li>
+            {% endif %}
+          {% endfor %}
+          
+          {% if comments.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ comments.next_page_number }}#comments-section" style="border-radius: 0 8px 8px 0;">
+              Next <i class="fas fa-chevron-right"></i>
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+        <div class="text-center mt-2">
+          <small class="text-muted">
+            Page {{ comments.number }} of {{ comments.paginator.num_pages }} 
+            ({{ comments_count }} total comment{{ comments_count|pluralize }})
+          </small>
+        </div>
+      </nav>
+      {% endif %}
+    {% else %}
+      <div class="alert alert-info" style="border-radius: 12px;">
+        <i class="fas fa-info-circle"></i> No comments yet. Be the first to comment!
+      </div>
+    {% endif %}
 
-      <!-- Add comment form -->
-      <form method="post">
+    <!-- Add comment form -->
+    <div class="mt-4">
+      <h6 class="mb-3">
+        <i class="fas fa-pen"></i> Add a Comment
+      </h6>
+      <form method="post" id="commentForm" onsubmit="return validateComment(event)">
         {% csrf_token %}
         <div class="mb-3">
-          <textarea name="text" rows="3" class="form-control" placeholder="Write a comment..." style="border-radius: 12px;" required></textarea>
+          <textarea 
+            name="content" 
+            rows="4" 
+            class="form-control" 
+            id="commentText"
+            placeholder="Share your thoughts about this project..." 
+            style="border-radius: 12px;" 
+            required
+            maxlength="1000"
+          ></textarea>
+          <div class="d-flex justify-content-between align-items-center mt-2">
+            <small class="text-muted">
+              <i class="fas fa-keyboard"></i> 
+              <span id="charCount">0</span>/1000 characters
+            </small>
+          </div>
+          <div id="commentError" class="alert alert-danger mt-2" role="alert" style="display: none; border-radius: 8px;">
+            <i class="fas fa-exclamation-circle"></i> <span id="errorMessage"></span>
+          </div>
         </div>
-        <button type="submit" class="btn btn-success" style="border-radius: 12px;">
-          <i class="fas fa-paper-plane"></i> Post Comment
+        <button type="submit" class="btn btn-success" id="submitBtn" style="border-radius: 12px; min-width: 150px;">
+          <span class="btn-text">
+            <i class="fas fa-paper-plane"></i> Post Comment
+          </span>
+          <span class="btn-loading" style="display: none;">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Posting...
+          </span>
         </button>
       </form>
     </div>
   </div>
+</div>
 
   <!-- Version History Section -->
-<div class="card shadow-sm mb-4" style="border-radius: 15px;">
+<div class="card shadow-sm mb-4" style=>"border-radius: 15px;">
   <div class="card-body">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h5 class="card-title mb-0">
@@ -579,6 +673,165 @@ function showDeleteModal(fileId, fileName) {
   const modal = new bootstrap.Modal(document.getElementById('deleteFileModal'));
   modal.show();
 }
+
+// ===== COMMENT FORM ENHANCEMENTS =====
+
+// Simple character counter (informational only)
+const commentText = document.getElementById('commentText');
+const charCount = document.getElementById('charCount');
+
+if (commentText) {
+  // Update counter on input
+  commentText.addEventListener('input', function() {
+    const length = this.value.length;
+    charCount.textContent = length;
+    
+    // Only show warning if approaching/exceeding limit
+    if (length > 950) {
+      charCount.style.color = '#dc3545'; // Red when close to limit
+      charCount.style.fontWeight = '600';
+    } else {
+      charCount.style.color = '#6c757d'; // Neutral gray
+      charCount.style.fontWeight = 'normal';
+    }
+  });
+  
+  // Prevent paste of extremely long text
+  commentText.addEventListener('paste', function(e) {
+    setTimeout(() => {
+      if (this.value.length > 1000) {
+        this.value = this.value.substring(0, 1000);
+        showError('Comment was truncated to 1000 characters.');
+      }
+    }, 10);
+  });
+}
+
+// Client-side validation function
+function validateComment(event) {
+  const commentError = document.getElementById('commentError');
+  const errorMessage = document.getElementById('errorMessage');
+  const text = commentText.value.trim();
+  
+  // Clear previous errors
+  hideError();
+  
+  // Validation checks
+  if (text.length === 0) {
+    showError('Comment cannot be empty.');
+    event.preventDefault();
+    return false;
+  }
+  
+  if (text.length > 1000) {
+    showError('Comment is too long (max 1000 characters).');
+    event.preventDefault();
+    return false;
+  }
+  
+  // Check if only whitespace/special chars (must have at least 1 alphanumeric)
+  const hasAlphanumeric = /[a-zA-Z0-9]/.test(text);
+  if (!hasAlphanumeric) {
+    showError('Comment must contain at least one letter or number.');
+    event.preventDefault();
+    return false;
+  }
+  
+  // All validations passed - show loading state
+  // DON'T disable the textarea before submit!
+  showLoadingState();
+  
+  // Allow form to submit normally
+  return true;
+}
+
+function showError(message) {
+  const commentError = document.getElementById('commentError');
+  const errorMessage = document.getElementById('errorMessage');
+  
+  errorMessage.textContent = message;
+  commentError.style.display = 'block';
+  
+  // Smooth scroll to error
+  commentError.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  
+  // Focus back on textarea
+  commentText.focus();
+  
+  // Add shake animation
+  commentError.style.animation = 'shake 0.5s';
+  setTimeout(() => {
+    commentError.style.animation = '';
+  }, 500);
+}
+
+function hideError() {
+  const commentError = document.getElementById('commentError');
+  commentError.style.display = 'none';
+}
+
+function showLoadingState() {
+  const submitBtn = document.getElementById('submitBtn');
+  const btnText = submitBtn.querySelector('.btn-text');
+  const btnLoading = submitBtn.querySelector('.btn-loading');
+  
+  btnText.style.display = 'none';
+  btnLoading.style.display = 'inline-block';
+  submitBtn.disabled = true;
+  
+  // DON'T disable the textarea - this prevents form data from being sent!
+  // Just make it look disabled
+  commentText.style.opacity = '0.6';
+  commentText.style.pointerEvents = 'none';
+}
+
+// Auto-scroll to comments section if page parameter exists
+window.addEventListener('DOMContentLoaded', function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const page = urlParams.get('page');
+  
+  if (page && window.location.hash === '') {
+    // If pagination was clicked, scroll to comments
+    const commentsSection = document.getElementById('comments-section');
+    if (commentsSection) {
+      setTimeout(() => {
+        commentsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }
+});
+
+// Add shake animation for error
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+  }
+  
+  #commentText:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  }
+  
+  .page-link {
+    color: #667eea;
+    border-radius: 6px;
+    margin: 0 2px;
+  }
+  
+  .page-link:hover {
+    color: #764ba2;
+    background-color: #f8f9fa;
+  }
+  
+  .page-item.active .page-link {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+  }
+`;
+document.head.appendChild(style);
 </script>
 
 <!-- Delete File Modal -->

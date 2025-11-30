@@ -14,6 +14,8 @@ from accounts.models import User
 from django.db import transaction
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from datetime import timedelta
 import time
 import os
 
@@ -286,9 +288,10 @@ def create_project(request):
     
     return render(request, 'accounts/create_project.html')
 
+
 @login_required
 def project_detail(request, project_id):
-    """View project details"""
+    """View project details with pagination and enhanced comment validation"""
     project = get_object_or_404(Project, id=project_id)
     
     # Check permissions - allow owner, shared users, or public projects
@@ -297,37 +300,70 @@ def project_detail(request, project_id):
         messages.error(request, 'You do not have permission to view this project.')
         return redirect('home')
     
-    # Handle comment posting
+    # Handle comment posting with validation
     if request.method == 'POST':
-        comment_text = request.POST.get('text')
-        if comment_text:
-            Comment.objects.create(
-                project=project,
-                author=request.user,
-                content=comment_text
-            )
-
-            # CREATE VERSION FOR COMMENT
-            create_project_version(
-                project=project,
-                user=request.user,
-                action='comment_added',
-                description=f'Comment added by {request.user.username}'
-            )
-
-            messages.success(request, 'Comment added successfully!')
+        from .forms import CommentForm
+        
+        form = CommentForm(request.POST)
+        
+        if form.is_valid():
+            comment_text = form.cleaned_data['content']
+            
+            # Create comment
+            try:
+                Comment.objects.create(
+                    project=project,
+                    author=request.user,
+                    content=comment_text
+                )
+                
+                # CREATE VERSION FOR COMMENT
+                create_project_version(
+                    project=project,
+                    user=request.user,
+                    action='comment_added',
+                    description=f'Comment added by {request.user.username}'
+                )
+                
+                messages.success(request, '✅ Comment added successfully!')
+                
+            except Exception as e:
+                messages.error(request, f'❌ Failed to add comment: {str(e)}')
+            
+            return redirect('project_detail', project_id=project.id)
+        else:
+            # Show form validation errors
+            for error in form.errors.values():
+                for err_msg in error:
+                    messages.error(request, f'❌ {err_msg}')
             return redirect('project_detail', project_id=project.id)
     
+    # GET request - display page
     files = project.files.all()
-    comments = project.comments.all()
-    versions = project.versions.all()[:10]  # Latest 5 versions
+    comments_list = Comment.objects.filter(project=project).order_by('-created_at')
     
-    return render(request, 'accounts/project_detail.html', {
+    # Pagination
+    paginator = Paginator(comments_list, 10)
+    page = request.GET.get('page', 1)
+    
+    try:
+        comments = paginator.page(page)
+    except PageNotAnInteger:
+        comments = paginator.page(1)
+    except EmptyPage:
+        comments = paginator.page(paginator.num_pages)
+    
+    versions = project.versions.all()[:10]
+    
+    context = {
         'project': project,
         'files': files,
         'comments': comments,
-        'versions': versions
-    })
+        'versions': versions,
+        'comments_count': comments_list.count(),
+    }
+    
+    return render(request, 'accounts/project_detail.html', context)
 
 @login_required
 def upload_file(request, project_id):

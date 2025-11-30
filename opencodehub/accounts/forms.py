@@ -138,3 +138,41 @@ class CustomLoginForm(AuthenticationForm):
                 self.confirm_login_allowed(self.user_cache)
 
         return self.cleaned_data
+
+class CommentForm(forms.Form):
+    """Form for project comments with validation"""
+    content = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'placeholder': 'Write a comment...',
+            'rows': 3,
+            'id': 'commentText',
+            'style': 'border-radius: 12px;',
+            'maxlength': '1000',
+        }),
+        max_length=1000,
+        min_length=3,
+        required=True,
+        error_messages={
+            'required': 'Comment cannot be empty.',
+            'min_length': 'Comment must be at least 3 characters long.',
+            'max_length': 'Comment is too long (max 1000 characters).',
+        }
+    )
+    
+    def clean_content(self):
+        content = self.cleaned_data.get('content', '').strip()
+        
+        # Check if empty after stripping
+        if not content:
+            raise forms.ValidationError('Comment cannot be empty.')
+        
+        # Check minimum length
+        if len(content) < 3:
+            raise forms.ValidationError('Comment must be at least 3 characters long.')
+        
+        # Check if only whitespace/special chars
+        if not any(c.isalnum() for c in content):
+            raise forms.ValidationError('Comment must contain at least one letter or number.')
+        
+        return content

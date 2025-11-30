@@ -182,7 +182,7 @@ class Comment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        ordering = ['created_at']
+        ordering = ['-created_at']  # ✅ DESCENDING ORDER (newest first) - ADD THE MINUS SIGN
     
     def __str__(self):
         return f"Comment by {self.author.username} on {self.project.title}"
