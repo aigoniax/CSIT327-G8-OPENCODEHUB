@@ -74,103 +74,208 @@
     position: relative;
 }
 
-/* Stat Cards */
-.stat-cards {
+/* ========== NEW COMPACT STAT CARDS (HORIZONTAL) ========== */
+.stat-cards-horizontal {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    gap: 16px;
     margin-bottom: 32px;
 }
 
-.stat-card {
-    padding: 24px;
-    border-radius: 16px;
-    color: white;
+.stat-card-compact {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
     text-decoration: none;
-    display: block;
-    position: relative;
-    transition: all 0.3s ease;
-    overflow: hidden;
+    color: inherit;
 }
 
-.stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-    text-decoration: none;
-    color: white;
+.stat-card-compact:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.stat-card-purple {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.stat-card-green {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-}
-
-.stat-card-pink {
-    background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
-}
-
-.stat-icon {
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.2);
+.stat-icon-compact {
+    width: 48px;
+    height: 48px;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
-    margin-bottom: 16px;
+    font-size: 20px;
+    color: white;
+    flex-shrink: 0;
 }
 
-.stat-label {
+.stat-icon-blue {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.stat-icon-green {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.stat-icon-orange {
+    background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+}
+
+.stat-info {
+    flex: 1;
+}
+
+.stat-label-compact {
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.5px;
-    opacity: 0.9;
-    margin-bottom: 8px;
+    color: #86868b;
+    text-transform: uppercase;
+    margin-bottom: 4px;
 }
 
-.stat-value {
-    font-size: 36px;
+.stat-value-compact {
+    font-size: 28px;
     font-weight: 700;
-    line-height: 1;
-    margin-bottom: 8px;
+    color: #1d1d1f;
 }
 
-.stat-description {
-    font-size: 13px;
-    opacity: 0.85;
-}
-
-.stat-arrow {
-    position: absolute;
-    bottom: 24px;
-    right: 24px;
-    width: 32px;
-    height: 32px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
+.stat-change {
+    font-size: 12px;
+    color: #34d399;
+    margin-top: 4px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    transition: all 0.3s ease;
+    gap: 4px;
 }
 
-.stat-card:hover .stat-arrow {
-    background: rgba(255, 255, 255, 0.3);
+/* ========== NEW DASHBOARD GRID LAYOUT ========== */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+/* ========== PROJECT CARDS SECTION ========== */
+.projects-section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1d1d1f;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.view-all-link {
+    font-size: 13px;
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.view-all-link:hover {
+    text-decoration: underline;
+}
+
+/* Project Cards Grid */
+.project-cards-grid {
+    display: grid;
+    gap: 16px;
+}
+
+.project-card-item {
+    padding: 16px;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.project-card-item:hover {
+    background: #f8f9fa;
+    border-color: #667eea;
     transform: translateX(4px);
 }
 
-/* Contribution Chart Card */
-.contribution-card {
+.project-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.project-card-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.project-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1d1d1f;
+    flex: 1;
+}
+
+.project-card-badge {
+    font-size: 9px;
+    padding: 3px 8px;
+    background: #667eea;
+    color: white;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.project-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 12px;
+    color: #86868b;
+    margin-top: 8px;
+}
+
+.project-card-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ========== TEAM CONTRIBUTIONS SECTION ========== */
+.contributions-section {
     background: white;
-    border-radius: 16px;
+    border-radius: 12px;
     padding: 24px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    margin-top: 24px;
 }
 
 .contribution-header {
@@ -181,6 +286,8 @@
     font-size: 16px;
     font-weight: 600;
     color: #1d1d1f;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     margin-bottom: 12px;
 }
 
@@ -232,7 +339,7 @@
 }
 
 .donut-center-value {
-    font-size: 24px;
+    font-size: 32px;
     font-weight: 700;
     color: #1d1d1f;
 }
@@ -241,6 +348,7 @@
     font-size: 11px;
     color: #86868b;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .contribution-legend {
@@ -272,12 +380,12 @@
 }
 
 .legend-name {
-    font-size: 14px;
+    font-size: 13px;
     color: #1d1d1f;
 }
 
 .legend-percentage {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     color: #1d1d1f;
 }
@@ -296,6 +404,70 @@
 
 .no-data-message p {
     font-size: 13px;
+}
+
+/* ========== LATEST ACTIVITY SECTION ========== */
+.activity-section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.timeline {
+    position: relative;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e5e5e5;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 32px;
+    margin-bottom: 20px;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: 0;
+    top: 4px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid #667eea;
+    z-index: 1;
+}
+
+.timeline-time {
+    font-size: 11px;
+    font-weight: 600;
+    color: #667eea;
+    margin-bottom: 4px;
+}
+
+.timeline-project {
+    font-size: 13px;
+    color: #1d1d1f;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.timeline-description {
+    font-size: 12px;
+    color: #86868b;
+    line-height: 1.4;
 }
 </style>
 
@@ -363,176 +535,154 @@
             <h1>Welcome to OpenCodeHub</h1>
         </div>
 
-        <!-- Stat Cards -->
-        <div class="stat-cards">
-            <a href="{% url 'my_projects' %}" class="stat-card stat-card-purple">
-                <div class="stat-icon">
+        <!-- Compact Horizontal Stat Cards -->
+        <div class="stat-cards-horizontal">
+            <a href="{% url 'my_projects' %}" class="stat-card-compact">
+                <div class="stat-icon-compact stat-icon-blue">
                     <i class="fas fa-folder"></i>
                 </div>
-                <div class="stat-label">TOTAL PROJECTS</div>
-                <div class="stat-value">{{ total_projects_count }}</div>
-                <div class="stat-description">Projects you've created</div>
-                <div class="stat-arrow">
-                    <i class="fas fa-arrow-right"></i>
+                <div class="stat-info">
+                    <div class="stat-label-compact">Total Projects</div>
+                    <div class="stat-value-compact">{{ total_projects_count }}</div>
+                    <div class="stat-change">
+                        <i class="fas fa-arrow-up"></i> +12%
+                    </div>
                 </div>
             </a>
             
-            <a href="{% url 'shared_by_me' %}" class="stat-card stat-card-green">
-                <div class="stat-icon">
+            <a href="{% url 'shared_by_me' %}" class="stat-card-compact">
+                <div class="stat-icon-compact stat-icon-green">
                     <i class="fas fa-share-alt"></i>
                 </div>
-                <div class="stat-label">SHARED BY ME</div>
-                <div class="stat-value">{{ shared_by_me_count }}</div>
-                <div class="stat-description">Projects you've shared with others</div>
-                <div class="stat-arrow">
-                    <i class="fas fa-arrow-right"></i>
+                <div class="stat-info">
+                    <div class="stat-label-compact">Shared by You</div>
+                    <div class="stat-value-compact">{{ shared_by_me_count }}</div>
+                    <div class="stat-change">
+                        <i class="fas fa-arrow-up"></i> +8%
+                    </div>
                 </div>
             </a>
             
-            <a href="{% url 'shared_with_me' %}" class="stat-card stat-card-pink">
-                <div class="stat-icon">
+            <a href="{% url 'shared_with_me' %}" class="stat-card-compact">
+                <div class="stat-icon-compact stat-icon-orange">
                     <i class="fas fa-users"></i>
                 </div>
-                <div class="stat-label">SHARED WITH ME</div>
-                <div class="stat-value">{{ shared_with_me_count }}</div>
-                <div class="stat-description">Projects others have shared</div>
-                <div class="stat-arrow">
-                    <i class="fas fa-arrow-right"></i>
+                <div class="stat-info">
+                    <div class="stat-label-compact">Shared with Me</div>
+                    <div class="stat-value-compact">{{ shared_with_me_count }}</div>
+                    <div class="stat-change">
+                        <i class="fas fa-arrow-up"></i> +15%
+                    </div>
                 </div>
             </a>
         </div>
 
-        {% if projects %}
-        <div class="projects-table">
-            <div class="table-header">
-                <div></div>
-                <div>NAME</div>
-                <div>MEMBERS</div>
-                <div>LAST MODIFIED</div>
-                <div>TYPE</div>
-                <div></div>
+        <!-- Main Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Left: Recent Projects -->
+            <div class="projects-section">
+                <div class="section-header">
+                    <h2 class="section-title">Recent Projects</h2>
+                    <a href="{% url 'my_projects' %}" class="view-all-link">View all</a>
+                </div>
+
+                {% if projects %}
+                <div class="project-cards-grid">
+                    {% for project in projects %}
+                    <a href="{% url 'project_detail' project.id %}" class="project-card-item">
+                        <div class="project-card-header">
+                            <div class="project-card-icon">
+                                <i class="fas fa-folder"></i>
+                            </div>
+                            <div class="project-card-title">{{ project.title }}</div>
+                            {% if project.shared_with.all.count > 0 %}
+                            <span class="project-card-badge">
+                                <i class="fas fa-users"></i> Shared
+                            </span>
+                            {% endif %}
+                        </div>
+                        <div class="project-card-meta">
+                            <div class="project-card-meta-item">
+                                <i class="fas fa-users"></i>
+                                <span>{{ project.shared_with.all.count|add:"1" }} member{{ project.shared_with.all.count|add:"1"|pluralize }}</span>
+                            </div>
+                            <div class="project-card-meta-item">
+                                <i class="fas fa-clock"></i>
+                                <span>{{ project.updated_at|timesince }} ago</span>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div style="text-align: center; padding: 40px 20px; color: #86868b;">
+                    <i class="fas fa-folder-open" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+                    <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px; color: #1d1d1f;">No projects yet</h3>
+                    <p style="font-size: 14px;">Create your first project to get started</p>
+                </div>
+                {% endif %}
             </div>
 
-            {% for project in projects %}
-            <div class="project-row" data-href="{% url 'project_detail' project.id %}">
-                <div class="project-icon">
-                    <i class="fas fa-folder"></i>
+            <!-- Right: Team Contributions (Moved from Right Sidebar) -->
+            {% if shared_projects %}
+            <div class="contributions-section">
+                <div class="contribution-header">
+                    <div class="contribution-title">Team Contributions</div>
+                    <select id="projectSelector" class="project-selector" onchange="updateChart()">
+                        {% for project in shared_projects %}
+                        <option value="{{ project.id }}">{{ project.title }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-                <div class="project-name">
-                    {{ project.title }}
 
-                <!-- Badge to show if project is shared with others -->
-                    {% if project.shared_with.all.count > 0 %}
-                        <span class="badge" style="background: #667eea; color: white; font-size: 10px; padding: 2px 8px; border-radius: 12px; margin-left: 8px;">
-                            <i class="fas fa-users"></i> Shared
-                        </span>
-                    {% endif %}   
-                </div>
-                <div class="project-members">
-                    <div class="member-avatar">{{ project.owner.first_name.0|upper }}</div>
-                
-                    <!-- Show shared user avatars -->
-                    {% for shared_user in project.shared_with.all|slice:":3" %}
-                        <div class="member-avatar" style="margin-left: -8px;">
-                            {{ shared_user.first_name.0|upper }}
+                <div class="chart-container">
+                    <div class="donut-chart" id="donutChart">
+                        <svg width="180" height="180" viewBox="0 0 180 180">
+                            <circle cx="90" cy="90" r="70" fill="none" stroke="#f0f0f0" stroke-width="20"/>
+                            <g id="chartSegments"></g>
+                        </svg>
+                        <div class="donut-center">
+                            <div class="donut-center-value" id="totalContributions">0</div>
+                            <div class="donut-center-label">Total</div>
                         </div>
-                    {% endfor %}
-                    
-                    <!-- Show +N if more than 3 shared users -->
-                    {% if project.shared_with.all.count > 3 %}
-                        <div class="member-avatar" style="margin-left: -8px; background: #86868b;">
-                            +{{ project.shared_with.all.count|add:"-3" }}
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="project-time">{{ project.updated_at|timesince }} ago</div>
-                <div class="project-type">
-                    {% if project.is_public %}Folder{% else %}Private{% endif %}
-                </div>
-                <div class="project-menu" onclick="event.stopPropagation();">
-                    <button class="menu-btn" onclick="toggleProjectMenu({{ project.id }})">
-                        <i class="fas fa-ellipsis-v"></i>
-                    </button>
-                    <div class="project-dropdown" id="projectMenu{{ project.id }}">
-                        <a href="{% url 'project_detail' project.id %}" class="dropdown-item">
-                            <i class="fas fa-eye"></i> Open
-                        </a>
-                        <button onclick="confirmDelete({{ project.id }}, '{{ project.title|escapejs }}')" class="dropdown-item dropdown-item-danger">
-                            <i class="fas fa-trash"></i> Move to Trash
-                        </button>
                     </div>
                 </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <div class="projects-table">
-            <div class="empty-state">
-                <i class="fas fa-folder-open"></i>
-                <h3>No projects yet</h3>
-                <p>Create your first project to get started</p>
-            </div>
-        </div>
-        {% endif %}
-    </div>
 
-    <!-- Right Sidebar -->
-    <div class="right-sidebar">
-        <!-- Team Contributions Chart -->
-        {% if shared_projects %}
-        <div class="contribution-card">
-            <div class="contribution-header">
-                <div class="contribution-title">Team Contributions</div>
-                <select id="projectSelector" class="project-selector" onchange="updateChart()">
-                    {% for project in shared_projects %}
-                    <option value="{{ project.id }}">{{ project.title }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="chart-container">
-                <div class="donut-chart" id="donutChart">
-                    <svg width="180" height="180" viewBox="0 0 180 180">
-                        <circle cx="90" cy="90" r="70" fill="none" stroke="#f0f0f0" stroke-width="20"/>
-                        <g id="chartSegments"></g>
-                    </svg>
-                    <div class="donut-center">
-                        <div class="donut-center-value" id="totalContributions">0</div>
-                        <div class="donut-center-label">Total</div>
-                    </div>
+                <div class="contribution-legend" id="contributionLegend">
+                    <!-- Legend items will be populated by JavaScript -->
                 </div>
             </div>
+            {% endif %}
+        </div>
 
-            <div class="contribution-legend" id="contributionLegend">
-                <!-- Legend items will be populated by JavaScript -->
+        <!-- Latest Activity Section (Full Width Below Grid) -->
+        <div class="activity-section">
+            <div class="section-header">
+                <h2 class="section-title">Latest Activity</h2>
             </div>
-        </div>
-        {% endif %}
-
-        <!-- Timeline -->
-        <div class="timeline-header" style="margin-top: {% if shared_projects %}24px{% else %}0{% endif %};">Latest work</div>
-        
-        {% if recent_activities %}
-        <div class="timeline">
-            {% for activity in recent_activities %}
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-time">{{ activity.time }}</div>
-                <div class="timeline-project">{{ activity.project_name }}</div>
-                <div class="timeline-description">{{ activity.description }}</div>
+            
+            {% if recent_activities %}
+            <div class="timeline">
+                {% for activity in recent_activities %}
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">{{ activity.time }}</div>
+                    <div class="timeline-project">{{ activity.project_name }}</div>
+                    <div class="timeline-description">{{ activity.description }}</div>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <div class="timeline">
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-time">Just now</div>
-                <div class="timeline-project">Getting Started</div>
-                <div class="timeline-description">Welcome to OpenCodeHub! Create your first project to start tracking your work.</div>
+            {% else %}
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">Just now</div>
+                    <div class="timeline-project">Getting Started</div>
+                    <div class="timeline-description">Welcome to OpenCodeHub! Create your first project to start tracking your work.</div>
+                </div>
             </div>
+            {% endif %}
         </div>
-        {% endif %}
     </div>
 </div>
 
