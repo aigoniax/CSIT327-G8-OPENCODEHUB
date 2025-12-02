@@ -4,80 +4,6 @@
 
 {% block content %}
 <style>
-    body {
-        background: #f5f5f7 !important;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    .dashboard-container {
-        display: flex;
-        min-height: calc(100vh - 76px);
-        padding: 0;
-        margin: 0;
-        background: #f5f5f7;
-    }
-
-    /* Left Sidebar */
-    .left-sidebar {
-        width: 200px;
-        background: white;
-        border-right: 1px solid #e5e5e5;
-        padding: 20px 0;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .sidebar-section {
-        margin-bottom: 24px;
-    }
-
-    .sidebar-section-title {
-        font-size: 11px;
-        font-weight: 600;
-        color: #86868b;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding: 0 16px;
-        margin-bottom: 8px;
-    }
-
-    .sidebar-item {
-        padding: 10px 16px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: #1d1d1f;
-        text-decoration: none;
-        transition: all 0.2s;
-        cursor: pointer;
-        font-size: 14px;
-    }
-
-    .sidebar-item:hover {
-        background: #f5f5f7;
-        color: #667eea;
-    }
-
-    .sidebar-item.active {
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-        color: #667eea;
-        font-weight: 500;
-        border-left: 3px solid #667eea;
-    }
-
-    .sidebar-item i {
-        width: 20px;
-        font-size: 16px;
-    }
-
-    /* Main Content */
-    .main-content {
-        flex: 1;
-        overflow-y: auto;
-        padding: 32px 40px;
-        background: #f5f5f7;
-    }
-
     .content-header {
         margin-bottom: 32px;
     }
@@ -289,118 +215,79 @@
     }
 </style>
 
-<div class="dashboard-container">
-    <!-- Left Sidebar -->
-    <div class="left-sidebar">
-        <div class="create-btn" onclick="toggleCreateDropdown()">
-            <i class="fas fa-plus"></i>
-            Create
-            <div class="create-dropdown" id="createDropdown">
-                <a href="{% url 'create_project' %}" class="create-dropdown-item">New Project</a>
-                <a href="#" class="create-dropdown-item" onclick="event.preventDefault(); openUploadFileModal()">Upload File</a>
-                <a href="#" class="create-dropdown-item" onclick="event.preventDefault(); openUploadFolderModal()">Upload Folder</a>
-                <a href="{% url 'create_document' %}" class="create-dropdown-item">Document</a>
-            </div>
-        </div>
+<div class="content-header">
+    <h1><i class="fas fa-briefcase"></i> My Projects</h1>
+    <p>Manage and explore your created projects</p>
+</div>
 
-        <div class="sidebar-section">
-            <div class="sidebar-section-title">Workspace</div>
-            <a href="{% url 'home' %}" class="sidebar-item">
-                <i class="fas fa-home"></i>
-                Home
-            </a>
-            <a href="{% url 'my_projects' %}" class="sidebar-item active">
-                <i class="fas fa-briefcase"></i>
-                My work
-            </a>
-            <a href="{% url 'shared_with_me' %}" class="sidebar-item">
-                <i class="fas fa-users"></i>
-                Shared with me
-            </a>
-            <a href="{% url 'browse_projects' %}" class="sidebar-item">
-                <i class="fas fa-globe"></i>
-                Browse
-            </a>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="content-header">
-            <h1><i class="fas fa-briefcase"></i> My Projects</h1>
-            <p>Manage and explore your created projects</p>
-        </div>
-
-        {% if projects %}
-            <div class="projects-grid">
-                {% for project in projects %}
-                <a href="{% url 'project_detail' project.id %}" class="project-card-link">
-                    <div class="project-card">
-                        <div class="project-header">
-                            <div class="project-icon">
-                                <i class="fas fa-folder"></i>
-                            </div>
-                            <h3 class="project-title">{{ project.title }}</h3>
-                            <div class="project-badges">
-                                {% if project.is_public %}
-                                    <span class="project-badge badge-public">
-                                        <i class="fas fa-globe"></i>
-                                    </span>
-                                {% else %}
-                                    <span class="project-badge badge-private">
-                                        <i class="fas fa-lock"></i>
-                                    </span>
-                                {% endif %}
-                                
-                                {% if project.shared_with.all.count > 0 %}
-                                    <span class="project-badge badge-shared">
-                                        <i class="fas fa-users"></i> {{ project.shared_with.all.count }}
-                                    </span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <p class="project-description">
-                            {{ project.description|default:"No description provided" }}
-                        </p>
-                        
-                        {% if project.shared_with.all %}
-                        <div class="shared-users">
-                            <span class="shared-label">SHARED WITH:</span>
-                            <div class="user-avatars">
-                                {% for shared_user in project.shared_with.all|slice:":3" %}
-                                    <div class="mini-avatar" title="{{ shared_user.username }}">
-                                        {{ shared_user.first_name.0|upper }}{{ shared_user.last_name.0|upper }}
-                                    </div>
-                                {% endfor %}
-                                {% if project.shared_with.all.count > 3 %}
-                                    <div class="mini-avatar" style="background: #86868b;">
-                                        +{{ project.shared_with.all.count|add:"-3" }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
+{% if projects %}
+    <div class="projects-grid">
+        {% for project in projects %}
+        <a href="{% url 'project_detail' project.id %}" class="project-card-link">
+            <div class="project-card">
+                <div class="project-header">
+                    <div class="project-icon">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                    <h3 class="project-title">{{ project.title }}</h3>
+                    <div class="project-badges">
+                        {% if project.is_public %}
+                            <span class="project-badge badge-public">
+                                <i class="fas fa-globe"></i>
+                            </span>
+                        {% else %}
+                            <span class="project-badge badge-private">
+                                <i class="fas fa-lock"></i>
+                            </span>
                         {% endif %}
                         
-                        <div class="project-footer">
-                            <div class="project-time">
-                                <i class="fas fa-clock"></i> {{ project.updated_at|timesince }} ago
-                            </div>
-                            <span class="view-btn">
-                                <i class="fas fa-eye"></i> View
+                        {% if project.shared_with.all.count > 0 %}
+                            <span class="project-badge badge-shared">
+                                <i class="fas fa-users"></i> {{ project.shared_with.all.count }}
                             </span>
-                        </div>
+                        {% endif %}
                     </div>
-                </a>
-                {% endfor %}
+                </div>
+                
+                <p class="project-description">
+                    {{ project.description|default:"No description provided" }}
+                </p>
+                
+                {% if project.shared_with.all %}
+                <div class="shared-users">
+                    <span class="shared-label">SHARED WITH:</span>
+                    <div class="user-avatars">
+                        {% for shared_user in project.shared_with.all|slice:":3" %}
+                            <div class="mini-avatar" title="{{ shared_user.username }}">
+                                {{ shared_user.first_name.0|upper }}{{ shared_user.last_name.0|upper }}
+                            </div>
+                        {% endfor %}
+                        {% if project.shared_with.all.count > 3 %}
+                            <div class="mini-avatar" style="background: #86868b;">
+                                +{{ project.shared_with.all.count|add:"-3" }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="project-footer">
+                    <div class="project-time">
+                        <i class="fas fa-clock"></i> {{ project.updated_at|timesince }} ago
+                    </div>
+                    <span class="view-btn">
+                        <i class="fas fa-eye"></i> View
+                    </span>
+                </div>
             </div>
-        {% else %}
-            <div class="empty-state">
-                <i class="fas fa-folder-open"></i>
-                <h3>No projects yet</h3>
-                <p>You haven't created any projects yet. Create your first project to get started!</p>
-            </div>
-        {% endif %}
+        </a>
+        {% endfor %}
     </div>
-</div>
+{% else %}
+    <div class="empty-state">
+        <i class="fas fa-folder-open"></i>
+        <h3>No projects yet</h3>
+        <p>You haven't created any projects yet. Create your first project to get started!</p>
+    </div>
+{% endif %}
 {% endblock %}

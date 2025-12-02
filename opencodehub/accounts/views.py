@@ -1692,6 +1692,17 @@ def update_profile(request):
     
     return redirect('profile')
 
+
+# SETTINGS PAGE
+@login_required
+def settings_view(request):
+    """User settings page"""
+    context = {
+        'user': request.user,
+    }
+    return render(request, 'accounts/settings.html', context)
+
+
 @login_required
 @require_GET
 def search_projects(request):

@@ -61,6 +61,7 @@
         font-size: 24px;
         background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
         -webkit-background-clip: text;
+        background-clip: text;
         -webkit-text-fill-color: transparent;
     }
 
@@ -197,11 +198,19 @@
         flex: 1;
     }
 
-    .profile-name {
-        font-size: 14px;
+    .profile-dropdown .profile-name {
+        font-size: 14px !important;
         font-weight: 600;
-        color: #1d1d1f;
+        color: #1d1d1f !important;
         margin-bottom: 2px;
+        background: none !important;
+        -webkit-background-clip: unset !important;
+        background-clip: unset !important;
+        -webkit-text-fill-color: #1d1d1f !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 160px;
     }
 
     .profile-email {
@@ -242,7 +251,7 @@
         margin-left: auto;
         width: 44px;
         height: 24px;
-        background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+        background: #4b5563;
         border-radius: 12px;
         position: relative;
         cursor: pointer;
@@ -261,7 +270,7 @@
         background: white;
         border-radius: 50%;
         top: 2px;
-        right: 2px;
+        left: 2px;
         transition: all 0.2s;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
@@ -659,6 +668,7 @@
         font-size: 64px;
         background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
         -webkit-background-clip: text;
+        background-clip: text;
         -webkit-text-fill-color: transparent;
         opacity: 0.3;
         margin-bottom: 16px;
@@ -789,6 +799,161 @@
     .search-bar {
         position: relative;
     }
+
+    /* ========== DARK MODE STYLES ========== */
+    body.dark-mode {
+        background: #1a1a2e;
+        color: #e4e4e7;
+    }
+
+    body.dark-mode .top-navbar {
+        background: linear-gradient(135deg, #1a1a2e 20%, #16213e 50%, #0f3460 100%);
+        border-bottom: 1px solid rgba(14, 165, 233, 0.2);
+    }
+
+    body.dark-mode .left-sidebar {
+        background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+        border-right: 1px solid rgba(14, 165, 233, 0.15);
+    }
+
+    body.dark-mode .right-sidebar {
+        background: linear-gradient(135deg, #1a1a2e 10%, #16213e 50%, #0f3460 100%);
+    }
+
+    body.dark-mode .main-content {
+        background: #1a1a2e;
+    }
+
+    body.dark-mode .search-bar input {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(14, 165, 233, 0.3);
+        color: #e4e4e7;
+    }
+
+    body.dark-mode .search-bar input::placeholder {
+        color: #9ca3af;
+    }
+
+    body.dark-mode .sidebar-section-title {
+        color: #9ca3af;
+    }
+
+    body.dark-mode .sidebar-item {
+        color: #d1d5db;
+    }
+
+    body.dark-mode .sidebar-item:hover {
+        background: rgba(14, 165, 233, 0.15);
+        color: #0ea5e9;
+    }
+
+    body.dark-mode .create-btn {
+        background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    }
+
+    body.dark-mode .profile-dropdown {
+        background: rgba(26, 26, 46, 0.98);
+        border-color: rgba(14, 165, 233, 0.2);
+    }
+
+    body.dark-mode .profile-dropdown .profile-name {
+        color: #e4e4e7 !important;
+        -webkit-text-fill-color: #e4e4e7 !important;
+    }
+
+    body.dark-mode .dropdown-item {
+        color: #e4e4e7;
+    }
+
+    body.dark-mode .profile-email {
+        color: #9ca3af;
+    }
+
+    body.dark-mode .dropdown-item:hover {
+        background: rgba(14, 165, 233, 0.15);
+    }
+
+    body.dark-mode .dropdown-divider {
+        background: rgba(14, 165, 233, 0.2);
+    }
+
+    body.dark-mode .timeline-project {
+        color: #e4e4e7;
+    }
+
+    body.dark-mode .timeline-description {
+        color: #9ca3af;
+    }
+
+    body.dark-mode .projects-table {
+        background: rgba(26, 26, 46, 0.9);
+        border-color: rgba(14, 165, 233, 0.15);
+    }
+
+    body.dark-mode .table-header {
+        background: rgba(14, 165, 233, 0.1);
+        border-color: rgba(14, 165, 233, 0.2);
+    }
+
+    body.dark-mode .project-row {
+        border-color: rgba(14, 165, 233, 0.1);
+    }
+
+    body.dark-mode .project-row:hover {
+        background: rgba(14, 165, 233, 0.1);
+    }
+
+    body.dark-mode .project-name {
+        color: #e4e4e7;
+    }
+
+    body.dark-mode .project-time,
+    body.dark-mode .project-type {
+        color: #9ca3af;
+    }
+
+    body.dark-mode .empty-state h3 {
+        color: #e4e4e7;
+    }
+
+    body.dark-mode .empty-state p {
+        color: #9ca3af;
+    }
+
+    body.dark-mode .search-results {
+        background: rgba(26, 26, 46, 0.98);
+        border-color: rgba(14, 165, 233, 0.2);
+    }
+
+    body.dark-mode .search-result-item {
+        color: #e4e4e7;
+        border-color: rgba(14, 165, 233, 0.1);
+    }
+
+    body.dark-mode .search-result-item:hover {
+        background: rgba(14, 165, 233, 0.1);
+    }
+
+    body.dark-mode .search-result-title {
+        color: #e4e4e7;
+    }
+
+    body.dark-mode .search-result-meta {
+        color: #9ca3af;
+    }
+
+    body.dark-mode .search-no-results {
+        color: #9ca3af;
+    }
+
+    /* Toggle switch active state */
+    .toggle-switch.active {
+        background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    }
+
+    .toggle-switch.active::after {
+        left: 22px;
+    }
 </style>
     
     <!-- Extra CSS Block for child templates -->
@@ -844,14 +1009,14 @@
                         <i class="fas fa-user"></i>
                         My Profile
                     </a>
-                    <a href="#" class="dropdown-item">
+                    <a href="{% url 'settings' %}" class="dropdown-item">
                         <i class="fas fa-cog"></i>
                         Settings
                     </a>
-                    <div class="dropdown-item">
+                    <div class="dropdown-item" id="nightModeToggle" onclick="toggleNightMode(event)">
                         <i class="fas fa-moon"></i>
                         Night mode
-                        <div class="toggle-switch"></div>
+                        <div class="toggle-switch" id="nightModeSwitch"></div>
                     </div>
                     <div class="dropdown-divider"></div>
                     <a href="{% url 'logout' %}" class="dropdown-item">
@@ -892,6 +1057,10 @@
                     <i class="fas fa-user-friends"></i>
                     Shared with me
                 </a>
+                <a href="{% url 'shared_by_me' %}" class="sidebar-item">
+                    <i class="fas fa-share-alt"></i>
+                    Shared by me
+                </a>
                 <a href="{% url 'browse_projects' %}" class="sidebar-item">
                     <i class="fas fa-globe"></i>
                     Browse
@@ -900,18 +1069,13 @@
 
             <div class="sidebar-section">
                 <div class="sidebar-section-title">Personal</div>
-                <a href="#" class="sidebar-item">
-                    <i class="fas fa-comment-alt"></i>
-                    Messages
-                    <span class="badge">N</span>
+                <a href="{% url 'profile' %}" class="sidebar-item">
+                    <i class="fas fa-user"></i>
+                    Profile
                 </a>
-                <a href="#" class="sidebar-item">
-                    <i class="fas fa-bell"></i>
-                    Notifications
-                </a>
-                <a href="#" class="sidebar-item">
+                <a href="{% url 'settings' %}" class="sidebar-item">
                     <i class="fas fa-cog"></i>
-                    Setting
+                    Settings
                 </a>
                 <a href="{% url 'trash' %}" class="sidebar-item">
                     <i class="fas fa-trash"></i>
@@ -1092,6 +1256,51 @@
                 "'": '&#039;'
             };
             return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // ========== NIGHT MODE FUNCTIONALITY ==========
+        function toggleNightMode(event) {
+            event.stopPropagation();
+            const body = document.body;
+            const toggleSwitch = document.getElementById('nightModeSwitch');
+            const moonIcon = document.querySelector('#nightModeToggle i');
+            
+            body.classList.toggle('dark-mode');
+            toggleSwitch.classList.toggle('active');
+            
+            // Update icon
+            if (body.classList.contains('dark-mode')) {
+                moonIcon.classList.remove('fa-moon');
+                moonIcon.classList.add('fa-sun');
+                localStorage.setItem('nightMode', 'enabled');
+            } else {
+                moonIcon.classList.remove('fa-sun');
+                moonIcon.classList.add('fa-moon');
+                localStorage.setItem('nightMode', 'disabled');
+            }
+        }
+
+        // Initialize night mode on page load
+        function initNightMode() {
+            const nightMode = localStorage.getItem('nightMode');
+            const toggleSwitch = document.getElementById('nightModeSwitch');
+            const moonIcon = document.querySelector('#nightModeToggle i');
+            
+            if (nightMode === 'enabled') {
+                document.body.classList.add('dark-mode');
+                if (toggleSwitch) toggleSwitch.classList.add('active');
+                if (moonIcon) {
+                    moonIcon.classList.remove('fa-moon');
+                    moonIcon.classList.add('fa-sun');
+                }
+            }
+        }
+
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', initNightMode);
+        // Also run immediately in case DOM is already loaded
+        if (document.readyState !== 'loading') {
+            initNightMode();
         }
     </script>
 </body>

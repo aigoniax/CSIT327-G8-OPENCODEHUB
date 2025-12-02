@@ -1,0 +1,329 @@
+{% extends 'accounts/home_base.html' %}
+
+{% block title %}Settings - OpenCodeHub{% endblock %}
+
+{% block content %}
+<style>
+    .settings-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .content-header {
+        margin-bottom: 32px;
+    }
+
+    .content-header h1 {
+        font-size: 32px;
+        font-weight: 700;
+        color: #1d1d1f;
+        margin: 0 0 8px 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .content-header h1 i {
+        color: #0ea5e9;
+    }
+
+    .content-header p {
+        color: #86868b;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .settings-section {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 24px;
+        border: 1px solid rgba(14, 165, 233, 0.1);
+        box-shadow: 0 4px 20px rgba(14, 165, 233, 0.08);
+    }
+
+    .settings-section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1d1d1f;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .settings-section-title i {
+        color: #0ea5e9;
+    }
+
+    .settings-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .settings-item:last-child {
+        border-bottom: none;
+    }
+
+    .settings-item-info {
+        flex: 1;
+    }
+
+    .settings-item-label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #1d1d1f;
+        margin-bottom: 4px;
+    }
+
+    .settings-item-description {
+        font-size: 12px;
+        color: #86868b;
+    }
+
+    .toggle-switch {
+        width: 48px;
+        height: 26px;
+        background: #e5e5e5;
+        border-radius: 13px;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .toggle-switch.active {
+        background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    }
+
+    .toggle-switch::after {
+        content: '';
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        background: white;
+        border-radius: 50%;
+        top: 2px;
+        left: 2px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .toggle-switch.active::after {
+        left: 24px;
+    }
+
+    .coming-soon-badge {
+        background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+        color: white;
+        font-size: 10px;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 4px;
+        text-transform: uppercase;
+    }
+
+    .settings-btn {
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+    }
+
+    .settings-btn-primary {
+        background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+        color: white;
+    }
+
+    .settings-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+    }
+
+    .settings-btn-danger {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .settings-btn-danger:hover {
+        background: #fecaca;
+    }
+
+    .user-info-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px;
+        background: linear-gradient(135deg, #e0f2fe 0%, #ecfeff 100%);
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+
+    .user-info-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+        font-weight: 600;
+        overflow: hidden;
+    }
+
+    .user-info-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .user-info-details h3 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1d1d1f;
+        margin: 0 0 4px 0;
+    }
+
+    .user-info-details p {
+        font-size: 14px;
+        color: #86868b;
+        margin: 0;
+    }
+</style>
+
+<div class="settings-container">
+    <div class="content-header">
+        <h1><i class="fas fa-cog"></i> Settings</h1>
+        <p>Manage your account settings and preferences</p>
+    </div>
+
+    <!-- Account Section -->
+    <div class="settings-section">
+        <div class="settings-section-title">
+            <i class="fas fa-user-circle"></i>
+            Account
+        </div>
+        
+        <div class="user-info-card">
+            <div class="user-info-avatar">
+                {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}">
+                {% else %}
+                    {{ user.first_name.0|upper }}{{ user.last_name.0|upper }}
+                {% endif %}
+            </div>
+            <div class="user-info-details">
+                <h3>{{ user.first_name }} {{ user.last_name }}</h3>
+                <p>{{ user.email }}</p>
+            </div>
+        </div>
+
+        <div class="settings-item">
+            <div class="settings-item-info">
+                <div class="settings-item-label">Edit Profile</div>
+                <div class="settings-item-description">Update your name, bio, and profile picture</div>
+            </div>
+            <a href="{% url 'profile' %}" class="settings-btn settings-btn-primary">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+        </div>
+
+        <div class="settings-item">
+            <div class="settings-item-info">
+                <div class="settings-item-label">Change Password</div>
+                <div class="settings-item-description">Update your account password</div>
+            </div>
+            <span class="coming-soon-badge">Coming Soon</span>
+        </div>
+
+        <div class="settings-item">
+            <div class="settings-item-info">
+                <div class="settings-item-label">Two-Factor Authentication</div>
+                <div class="settings-item-description">Add an extra layer of security to your account</div>
+            </div>
+            <span class="coming-soon-badge">Coming Soon</span>
+        </div>
+    </div>
+
+    <!-- Preferences Section -->
+    <div class="settings-section">
+        <div class="settings-section-title">
+            <i class="fas fa-sliders-h"></i>
+            Preferences
+        </div>
+
+        <div class="settings-item">
+            <div class="settings-item-info">
+                <div class="settings-item-label">Dark Mode</div>
+                <div class="settings-item-description">Switch between light and dark theme</div>
+            </div>
+            <span class="coming-soon-badge">Coming Soon</span>
+        </div>
+
+        <div class="settings-item">
+            <div class="settings-item-info">
+                <div class="settings-item-label">Email Notifications</div>
+                <div class="settings-item-description">Receive email updates about your projects</div>
+            </div>
+            <span class="coming-soon-badge">Coming Soon</span>
+        </div>
+
+        <div class="settings-item">
+            <div class="settings-item-info">
+                <div class="settings-item-label">Language</div>
+                <div class="settings-item-description">Choose your preferred language</div>
+            </div>
+            <span class="coming-soon-badge">Coming Soon</span>
+        </div>
+    </div>
+
+    <!-- Privacy Section -->
+    <div class="settings-section">
+        <div class="settings-section-title">
+            <i class="fas fa-shield-alt"></i>
+            Privacy & Security
+        </div>
+
+        <div class="settings-item">
+            <div class="settings-item-info">
+                <div class="settings-item-label">Profile Visibility</div>
+                <div class="settings-item-description">Control who can see your profile</div>
+            </div>
+            <span class="coming-soon-badge">Coming Soon</span>
+        </div>
+
+        <div class="settings-item">
+            <div class="settings-item-info">
+                <div class="settings-item-label">Activity Status</div>
+                <div class="settings-item-description">Show when you're active on OpenCodeHub</div>
+            </div>
+            <span class="coming-soon-badge">Coming Soon</span>
+        </div>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="settings-section" style="border-color: #fecaca;">
+        <div class="settings-section-title" style="color: #dc2626;">
+            <i class="fas fa-exclamation-triangle"></i>
+            Danger Zone
+        </div>
+
+        <div class="settings-item">
+            <div class="settings-item-info">
+                <div class="settings-item-label">Delete Account</div>
+                <div class="settings-item-description">Permanently delete your account and all data</div>
+            </div>
+            <span class="coming-soon-badge">Coming Soon</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

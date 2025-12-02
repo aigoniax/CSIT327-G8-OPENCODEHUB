@@ -4,80 +4,6 @@
 
 {% block content %}
 <style>
-    body {
-        background: #f5f5f7 !important;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    .dashboard-container {
-        display: flex;
-        min-height: calc(100vh - 76px);
-        padding: 0;
-        margin: 0;
-        background: #f5f5f7;
-    }
-
-    /* Left Sidebar */
-    .left-sidebar {
-        width: 200px;
-        background: white;
-        border-right: 1px solid #e5e5e5;
-        padding: 20px 0;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .sidebar-section {
-        margin-bottom: 24px;
-    }
-
-    .sidebar-section-title {
-        font-size: 11px;
-        font-weight: 600;
-        color: #86868b;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding: 0 16px;
-        margin-bottom: 8px;
-    }
-
-    .sidebar-item {
-        padding: 10px 16px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: #1d1d1f;
-        text-decoration: none;
-        transition: all 0.2s;
-        cursor: pointer;
-        font-size: 14px;
-    }
-
-    .sidebar-item:hover {
-        background: #f5f5f7;
-        color: #667eea;
-    }
-
-    .sidebar-item.active {
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-        color: #667eea;
-        font-weight: 500;
-        border-left: 3px solid #667eea;
-    }
-
-    .sidebar-item i {
-        width: 20px;
-        font-size: 16px;
-    }
-
-    /* Main Content */
-    .main-content {
-        flex: 1;
-        overflow-y: auto;
-        padding: 32px 40px;
-        background: #f5f5f7;
-    }
-
     .content-header {
         margin-bottom: 32px;
     }
@@ -224,104 +150,65 @@
     }
 </style>
 
-<div class="dashboard-container">
-    <!-- Left Sidebar -->
-    <div class="left-sidebar">
-        <div class="create-btn" onclick="toggleCreateDropdown()">
-            <i class="fas fa-plus"></i>
-            Create
-            <div class="create-dropdown" id="createDropdown">
-                <a href="{% url 'create_project' %}" class="create-dropdown-item">New Project</a>
-                <a href="#" class="create-dropdown-item" onclick="event.preventDefault(); openUploadFileModal()">Upload File</a>
-                <a href="#" class="create-dropdown-item" onclick="event.preventDefault(); openUploadFolderModal()">Upload Folder</a>
-                <a href="{% url 'create_document' %}" class="create-dropdown-item">Document</a>
-            </div>
-        </div>
-
-        <div class="sidebar-section">
-            <div class="sidebar-section-title">Workspace</div>
-            <a href="{% url 'home' %}" class="sidebar-item">
-                <i class="fas fa-home"></i>
-                Home
-            </a>
-            <a href="{% url 'my_projects' %}" class="sidebar-item">
-                <i class="fas fa-briefcase"></i>
-                My work
-            </a>
-            <a href="{% url 'shared_with_me' %}" class="sidebar-item active">
-                <i class="fas fa-users"></i>
-                Shared with me
-            </a>
-            <a href="{% url 'browse_projects' %}" class="sidebar-item">
-                <i class="fas fa-globe"></i>
-                Browse
-            </a>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="content-header">
-            <h1><i class="fas fa-users"></i> Shared With Me</h1>
-            <p>Projects that others have shared with you</p>
-        </div>
-
-        {% if projects %}
-        <div class="projects-table">
-            <div class="table-header">
-                <div></div>
-                <div>NAME</div>
-                <div>SHARED BY</div>
-                <div>LAST MODIFIED</div>
-                <div>ACCESS</div>
-                <div></div>
-            </div>
-
-            {% for project in projects %}
-            <div class="project-row" data-href="{% url 'project_detail' project.id %}">
-                <div class="project-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="project-name">
-                    {{ project.title }}
-                </div>
-                <div class="project-owner">
-                    <div class="owner-avatar">
-                        {{ project.owner.first_name.0|upper }}{{ project.owner.last_name.0|upper }}
-                    </div>
-                    <span>{{ project.owner.first_name }} {{ project.owner.last_name }}</span>
-                </div>
-                <div class="project-time">{{ project.updated_at|timesince }} ago</div>
-                <div>
-                    {% if project.permission == 'edit' %}
-                    <span class="project-badge" style="background: #d4edda; color: #155724;">
-                        <i class="fas fa-edit"></i>
-                        Can Edit
-                    </span>
-                    {% else %}
-                    <span class="project-badge" style="background: #d1ecf1; color: #0c5460;">
-                        <i class="fas fa-eye"></i>
-                        View Only
-                    </span>
-                    {% endif %}
-                </div>
-                <div class="project-menu">
-                    <i class="fas fa-ellipsis-v"></i>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <div class="projects-table">
-            <div class="empty-state">
-                <i class="fas fa-users"></i>
-                <h3>No shared projects</h3>
-                <p>When someone shares a project with you, it will appear here</p>
-            </div>
-        </div>
-        {% endif %}
-    </div>
+<div class="content-header">
+    <h1><i class="fas fa-users"></i> Shared With Me</h1>
+    <p>Projects that others have shared with you</p>
 </div>
+
+{% if projects %}
+    <div class="projects-table">
+        <div class="table-header">
+            <div></div>
+            <div>NAME</div>
+            <div>SHARED BY</div>
+            <div>LAST MODIFIED</div>
+            <div>ACCESS</div>
+            <div></div>
+        </div>
+
+        {% for project in projects %}
+        <div class="project-row" data-href="{% url 'project_detail' project.id %}">
+            <div class="project-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="project-name">
+                {{ project.title }}
+            </div>
+            <div class="project-owner">
+                <div class="owner-avatar">
+                    {{ project.owner.first_name.0|upper }}{{ project.owner.last_name.0|upper }}
+                </div>
+                <span>{{ project.owner.first_name }} {{ project.owner.last_name }}</span>
+            </div>
+            <div class="project-time">{{ project.updated_at|timesince }} ago</div>
+            <div>
+                {% if project.permission == 'edit' %}
+                <span class="project-badge" style="background: #d4edda; color: #155724;">
+                    <i class="fas fa-edit"></i>
+                    Can Edit
+                </span>
+                {% else %}
+                <span class="project-badge" style="background: #d1ecf1; color: #0c5460;">
+                    <i class="fas fa-eye"></i>
+                    View Only
+                </span>
+                {% endif %}
+            </div>
+            <div class="project-menu">
+                <i class="fas fa-ellipsis-v"></i>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="projects-table">
+        <div class="empty-state">
+            <i class="fas fa-users"></i>
+            <h3>No shared projects</h3>
+            <p>When someone shares a project with you, it will appear here</p>
+        </div>
+    </div>
+{% endif %}
 
 <script>
 document.querySelectorAll('.project-row').forEach(row => {
