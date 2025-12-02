@@ -10,21 +10,33 @@
     }
 </style>
 
+<!-- Animated Background Orbs -->
+<div class="background-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="orb orb-4"></div>
+    <div class="orb orb-5"></div>
+</div>
+
 <div class="auth-container">
     <div class="auth-card">
         <div class="auth-header">
+            <div class="logo-badge">
+                <i class="fas fa-code"></i>
+            </div>
             <h2>Welcome to OpenCodeHub!</h2>
             <p>OpenCodeHub is a friendly online space where students, beginners, and creative minds come together to share and collaborate on projects. Whether you're working on code, documents, designs, or notes, we make it easy to get started with simple tools for uploading, organising, and sharing your work.</p>
         </div>
         
         <div class="row g-3">
             <div class="col-6">
-                <a href="{% url 'login' %}" class="btn btn-primary">
+                <a href="{% url 'login' %}" class="btn btn-ocean">
                     <i class="fas fa-sign-in-alt"></i> Sign In
                 </a>
             </div>
             <div class="col-6">
-                <a href="{% url 'register' %}" class="btn btn-primary">
+                <a href="{% url 'register' %}" class="btn btn-ocean">
                     <i class="fas fa-user-plus"></i> Sign Up
                 </a>
             </div>
@@ -34,32 +46,122 @@
             <span>Why Choose OpenCodeHub?</span>
         </div>
         
-        <div class="text-center">
-            <small class="text-muted">
-                <i class="fas fa-check text-success"></i> Easy project sharing<br>
-                <i class="fas fa-check text-success"></i> Beginner-friendly interface<br>
-                <i class="fas fa-check text-success"></i> Collaborative tools<br>
-                <i class="fas fa-check text-success"></i> Version history tracking
-            </small>
+        <div class="features-list">
+            <div class="feature-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Easy project sharing</span>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Beginner-friendly interface</span>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Collaborative tools</span>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Version history tracking</span>
+            </div>
         </div>
     </div>
 </div>
 
 <style>
-    /* Background: white, but keep header gradient */
+    /* Oceanic Background with Animated Orbs */
     body {
-        background-color: white;
         margin: 0;
         font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #e0f7ff 0%, #f0fcff 50%, #e8f9f9 100%);
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
     }
 
-    /* Header gradient stays the same */
+    /* Animated Background Orbs */
+    .background-orbs {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(60px);
+        opacity: 0;
+        animation: fadeInOut 8s ease-in-out infinite;
+    }
+
+    .orb-1 {
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(0, 188, 212, 0.3), transparent);
+        top: 10%;
+        left: 15%;
+        animation-delay: 0s;
+    }
+
+    .orb-2 {
+        width: 350px;
+        height: 350px;
+        background: radial-gradient(circle, rgba(0, 150, 136, 0.25), transparent);
+        top: 60%;
+        right: 10%;
+        animation-delay: 2s;
+    }
+
+    .orb-3 {
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(0, 200, 180, 0.2), transparent);
+        bottom: 15%;
+        left: 10%;
+        animation-delay: 4s;
+    }
+
+    .orb-4 {
+        width: 450px;
+        height: 450px;
+        background: radial-gradient(circle, rgba(16, 185, 129, 0.2), transparent);
+        top: 30%;
+        right: 20%;
+        animation-delay: 1s;
+    }
+
+    .orb-5 {
+        width: 320px;
+        height: 320px;
+        background: radial-gradient(circle, rgba(20, 184, 166, 0.25), transparent);
+        bottom: 30%;
+        left: 40%;
+        animation-delay: 3s;
+    }
+
+    @keyframes fadeInOut {
+        0%, 100% {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    /* Oceanic Gradient Header */
     header, .navbar {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0288D1 0%, #00BCD4 50%, #009688 100%);
         color: white;
         padding: 15px 30px;
         font-weight: 600;
         font-size: 20px;
+        box-shadow: 0 4px 20px rgba(0, 150, 136, 0.2);
     }
 
     /* Auth container centered */
@@ -67,68 +169,136 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        height: calc(100vh - 80px);
-        background-color: white;
+        min-height: calc(100vh - 80px);
+        padding: 40px 20px;
+        position: relative;
+        z-index: 1;
     }
 
     .auth-card {
-        background: #ffffff;
-        border-radius: 16px;
-        box-shadow: 0px 5px 25px rgba(0, 0, 0, 0.08);
-        padding: 40px;
-        max-width: 450px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(0, 150, 136, 0.15);
+        padding: 50px 40px;
+        max-width: 520px;
         width: 100%;
         text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auth-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #0288D1, #00BCD4, #009688, #10B981);
+        border-radius: 24px 24px 0 0;
+    }
+
+    .logo-badge {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        background: linear-gradient(135deg, #0288D1, #00BCD4, #009688);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 30px rgba(0, 150, 136, 0.3);
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .logo-badge i {
+        font-size: 36px;
+        color: white;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
     }
 
     .auth-header h2 {
-        color: #333;
+        background: linear-gradient(135deg, #0288D1, #00BCD4, #009688);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
         font-weight: 700;
         margin-bottom: 15px;
+        font-size: 28px;
     }
 
     .auth-header p {
-        color: #555;
+        color: #546e7a;
         font-size: 15px;
+        line-height: 1.6;
     }
 
-    .btn-primary {
-        background: #667eea;
+    .btn-ocean {
+        background: linear-gradient(135deg, #0288D1, #00BCD4, #009688);
         border: none;
         border-radius: 12px;
-        padding: 12px 24px;
+        padding: 14px 24px;
         font-weight: 600;
         font-size: 16px;
         width: 100%;
         color: #fff;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 150, 136, 0.3);
+        position: relative;
+        overflow: hidden;
     }
 
-    .btn-primary:hover {
-        background: white;
-        color: #667eea;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    .btn-ocean::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s;
     }
 
-    .btn-primary:active {
+    .btn-ocean:hover::before {
+        left: 100%;
+    }
+
+    .btn-ocean:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 150, 136, 0.4);
+        background: linear-gradient(135deg, #0277BD, #00ACC1, #00897B);
+    }
+
+    .btn-ocean:active {
         transform: translateY(0);
     }
 
     /* Divider style */
     .divider {
-        margin: 20px 0;
+        margin: 30px 0 25px;
         position: relative;
         text-align: center;
     }
 
     .divider span {
-        background: white;
-        padding: 0 10px;
-        font-weight: 500;
-        color: #764ba2;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 0 15px;
+        font-weight: 600;
+        background: linear-gradient(135deg, #0288D1, #009688);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
         z-index: 1;
         position: relative;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
 
     .divider:before {
@@ -137,9 +307,57 @@
         top: 50%;
         left: 0;
         width: 100%;
-        height: 1px;
-        background: #e0e0e0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #00BCD4, transparent);
         z-index: 0;
+    }
+
+    /* Features List */
+    .features-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px;
+        background: rgba(0, 188, 212, 0.08);
+        border-radius: 12px;
+        border: 1px solid rgba(0, 188, 212, 0.15);
+        transition: all 0.3s ease;
+    }
+
+    .feature-item:hover {
+        background: rgba(0, 188, 212, 0.12);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.15);
+    }
+
+    .feature-item i {
+        color: #10B981;
+        font-size: 18px;
+    }
+
+    .feature-item span {
+        color: #546e7a;
+        font-size: 13px;
+        font-weight: 500;
+        text-align: left;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 576px) {
+        .features-list {
+            grid-template-columns: 1fr;
+        }
+
+        .auth-card {
+            padding: 40px 30px;
+        }
     }
 </style>
 

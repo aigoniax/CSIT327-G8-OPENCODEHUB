@@ -9,199 +9,587 @@
         display: none !important;
     }
 </style>
+
+<!-- Animated Background Orbs -->
+<div class="background-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="orb orb-4"></div>
+    <div class="orb orb-5"></div>
+</div>
+
 <div class="auth-container">
-    <div class="auth-card">
-        <div class="auth-header">
-            <h2>Sign In</h2>
-            <p>Welcome back! Please sign in to your account.</p>
+    <div class="auth-split-layout">
+        <!-- Left Side: Welcome Content -->
+        <div class="auth-welcome-side">
+            <div class="welcome-content">
+                <div class="welcome-icon">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <h1 class="welcome-title">Welcome Back!</h1>
+                <p class="welcome-subtitle">Continue your coding journey with OpenCodeHub</p>
+                
+                <div class="feature-highlights">
+                    <div class="highlight-item">
+                        <div class="highlight-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div class="highlight-text">
+                            <h3>Collaborate on Projects</h3>
+                            <p>Work with your team and contribute to shared project tasks.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="highlight-item">
+                        <div class="highlight-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="highlight-text">
+                            <h3>Project Insights</h3>
+                            <p>Explore shared projects, follow version history, and see contributions.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="highlight-item">
+                        <div class="highlight-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="highlight-text">
+                            <h3>Track Progress</h3>
+                            <p>Monitor your learning journey</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         
-        <form method="post">
-            {% csrf_token %}
-            
-            <!-- Username/Email Field -->
-            <div class="mb-3">
-                {{ form.username }}
-                {% if form.username.errors %}
-                    <div class="text-danger small mt-1">
-                        {% for error in form.username.errors %}
-                            {{ error }}
-                        {% endfor %}
+        <!-- Right Side: Sign In Form -->
+        <div class="auth-form-side">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <div class="logo-badge">
+                        <i class="fas fa-sign-in-alt"></i>
                     </div>
-                {% endif %}
-            </div>
-            
-            <!-- Password Field -->
-            <div class="mb-3">
-                {{ form.password }}
-                {% if form.password.errors %}
-                    <div class="text-danger small mt-1">
-                        {% for error in form.password.errors %}
-                            {{ error }}
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-            
-            <!-- Non-field errors -->
-            {% if form.non_field_errors %}
-                <div class="alert alert-danger">
-                    {% for error in form.non_field_errors %}
-                        {{ error }}
-                    {% endfor %}
+                    <h2>Sign In</h2>
+                    <p>Welcome back! Please sign in to your account.</p>
                 </div>
-            {% endif %}
-            
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-sign-in-alt"></i> Sign In
-            </button>
-        </form>
-        
-        <div class="auth-links">
-            <p><a href="{% url 'password_reset' %}">Forgot your password?</a></p>
-            <div class="divider">
-                <span>Don't have an account?</span>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Username/Email Field -->
+                    <div class="form-group">
+                        <label for="id_username">
+                            <i class="fas fa-user"></i> Username or Email
+                        </label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <div class="error-message">
+                                {% for error in form.username.errors %}
+                                    <i class="fas fa-exclamation-circle"></i> {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Password Field -->
+                    <div class="form-group">
+                        <label for="id_password">
+                            <i class="fas fa-lock"></i> Password
+                        </label>
+                        {{ form.password }}
+                        {% if form.password.errors %}
+                            <div class="error-message">
+                                {% for error in form.password.errors %}
+                                    <i class="fas fa-exclamation-circle"></i> {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Non-field errors -->
+                    {% if form.non_field_errors %}
+                        <div class="alert-error">
+                            {% for error in form.non_field_errors %}
+                                <i class="fas fa-exclamation-triangle"></i> {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="forgot-password">
+                        <a href="{% url 'password_reset' %}">
+                            <i class="fas fa-key"></i> Forgot your password?
+                        </a>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-ocean">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </button>
+                </form>
+                
+                <div class="auth-links">
+                    <div class="divider">
+                        <span>Don't have an account?</span>
+                    </div>
+                    <a href="{% url 'register' %}" class="btn btn-create-account">
+                        <i class="fas fa-user-plus"></i> Create an Account
+                    </a>
+                </div>
             </div>
-            <a href="{% url 'register' %}" class="btn btn-create-account">
-                <i class="fas fa-user-plus"></i> Create an Account
-            </a>
         </div>
     </div>
 </div>
 
 <style>
-    /* White background, keep gradient header */
+    /* Oceanic Background with Animated Orbs */
     body {
-        background-color: white;
-        font-family: 'Poppins', sans-serif;
         margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #e0f7ff 0%, #f0fcff 50%, #e8f9f9 100%);
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
     }
 
+    /* Animated Background Orbs */
+    .background-orbs {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(60px);
+        opacity: 0;
+        animation: fadeInOut 8s ease-in-out infinite;
+    }
+
+    .orb-1 {
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(0, 188, 212, 0.3), transparent);
+        top: 10%;
+        left: 15%;
+        animation-delay: 0s;
+    }
+
+    .orb-2 {
+        width: 350px;
+        height: 350px;
+        background: radial-gradient(circle, rgba(0, 150, 136, 0.25), transparent);
+        top: 60%;
+        right: 10%;
+        animation-delay: 2s;
+    }
+
+    .orb-3 {
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(0, 200, 180, 0.2), transparent);
+        bottom: 15%;
+        left: 10%;
+        animation-delay: 4s;
+    }
+
+    .orb-4 {
+        width: 450px;
+        height: 450px;
+        background: radial-gradient(circle, rgba(16, 185, 129, 0.2), transparent);
+        top: 30%;
+        right: 20%;
+        animation-delay: 1s;
+    }
+
+    .orb-5 {
+        width: 320px;
+        height: 320px;
+        background: radial-gradient(circle, rgba(20, 184, 166, 0.25), transparent);
+        bottom: 30%;
+        left: 40%;
+        animation-delay: 3s;
+    }
+
+    @keyframes fadeInOut {
+        0%, 100% {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    /* Oceanic Gradient Header */
     header, .navbar {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0288D1 0%, #00BCD4 50%, #009688 100%);
         color: white;
         padding: 15px 30px;
         font-weight: 600;
         font-size: 20px;
+        box-shadow: 0 4px 20px rgba(0, 150, 136, 0.2);
     }
 
+    /* Auth Container */
     .auth-container {
         display: flex;
         justify-content: center;
         align-items: center;
-        height: calc(100vh - 80px);
-        background-color: white;
+        min-height: calc(100vh - 80px);
+        padding: 40px 20px;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Split Layout */
+    .auth-split-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        max-width: 1200px;
+        width: 100%;
+        align-items: center;
+    }
+
+    /* Left Side: Welcome Content */
+    .auth-welcome-side {
+        padding: 40px;
+    }
+
+    .welcome-content {
+        max-width: 500px;
+    }
+
+    .welcome-icon {
+        width: 90px;
+        height: 90px;
+        background: linear-gradient(135deg, #0288D1, #00BCD4, #009688);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 30px;
+        box-shadow: 0 15px 40px rgba(0, 150, 136, 0.3);
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .welcome-icon i {
+        font-size: 42px;
+        color: white;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-15px); }
+    }
+
+    .welcome-title {
+        font-size: 48px;
+        font-weight: 800;
+        background: linear-gradient(135deg, #0288D1, #00BCD4, #009688);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 15px;
+        line-height: 1.2;
+    }
+
+    .welcome-subtitle {
+        font-size: 20px;
+        color: #546e7a;
+        margin-bottom: 50px;
+        line-height: 1.6;
+    }
+
+    /* Feature Highlights */
+    .feature-highlights {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    .highlight-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        transition: all 0.3s ease;
+    }
+
+    .highlight-item:hover {
+        transform: translateX(10px);
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 10px 30px rgba(0, 150, 136, 0.15);
+    }
+
+    .highlight-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #0288D1, #00BCD4);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 8px 20px rgba(0, 188, 212, 0.3);
+    }
+
+    .highlight-icon i {
+        font-size: 24px;
+        color: white;
+    }
+
+    .highlight-text h3 {
+        font-size: 20px;
+        font-weight: 700;
+        color: #0288D1;
+        margin: 0 0 8px 0;
+    }
+
+    .highlight-text p {
+        font-size: 15px;
+        color: #546e7a;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    /* Right Side: Form */
+    .auth-form-side {
+        display: flex;
+        justify-content: center;
     }
 
     .auth-card {
-        background: #fff;
-        border-radius: 16px;
-        box-shadow: 0px 5px 25px rgba(0,0,0,0.08);
-        padding: 40px;
-        max-width: 400px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(0, 150, 136, 0.15);
+        padding: 50px 45px;
         width: 100%;
+        max-width: 480px;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        position: relative;
+    }
+
+    .auth-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #0288D1, #00BCD4, #009688, #10B981);
+        border-radius: 24px 24px 0 0;
+    }
+
+    .logo-badge {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 20px;
+        background: linear-gradient(135deg, #0288D1, #00BCD4);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 30px rgba(0, 150, 136, 0.3);
+    }
+
+    .logo-badge i {
+        font-size: 32px;
+        color: white;
+    }
+
+    .auth-header {
         text-align: center;
+        margin-bottom: 35px;
     }
 
     .auth-header h2 {
-        color: #333;
+        background: linear-gradient(135deg, #0288D1, #009688);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
         font-weight: 700;
+        font-size: 32px;
         margin-bottom: 10px;
     }
 
     .auth-header p {
-        color: #666;
+        color: #546e7a;
         font-size: 15px;
+    }
+
+    /* Form Styling */
+    .form-group {
         margin-bottom: 25px;
     }
 
+    .form-group label {
+        display: block;
+        color: #0288D1;
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .form-group label i {
+        margin-right: 5px;
+    }
+
     input[type="text"],
-    input[type="password"] {
-        border-radius: 10px;
-        border: 1px solid #ccc;
-        padding: 10px;
+    input[type="password"],
+    input[type="email"] {
         width: 100%;
-        outline: none;
-        transition: border-color 0.3s;
+        padding: 14px 16px;
+        border: 2px solid rgba(0, 188, 212, 0.2);
+        border-radius: 12px;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.9);
+        color: #333;
     }
 
     input[type="text"]:focus,
-    input[type="password"]:focus {
-        border-color: #764ba2;
+    input[type="password"]:focus,
+    input[type="email"]:focus {
+        outline: none;
+        border-color: #00BCD4;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1);
     }
 
-    /* Sign In Button */
-    .btn-primary, .btn-outline-primary {
-    background: #667eea !important;
-    border: none;
-    border-radius: 12px;
-    padding: 12px 24px;
-    font-weight: 600;
-    font-size: 16px;
-    width: 100%;
-    color: #fff !important;
-    transition: all 0.2s ease;
-}
+    .error-message {
+        color: #e53e3e;
+        font-size: 13px;
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
 
-/* Hover effect for Sign In button */
-.btn-primary:hover,
-.btn-outline-primary:hover {
-    background: white !important;
-    color: #667eea !important;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-}
+    .alert-error {
+        background: rgba(229, 62, 62, 0.1);
+        border: 1px solid rgba(229, 62, 62, 0.3);
+        color: #e53e3e;
+        padding: 12px 16px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
 
-.btn-primary:active,
-.btn-outline-primary:active {
-    transform: translateY(0);
-}
+    .forgot-password {
+        text-align: right;
+        margin-bottom: 25px;
+    }
 
-
-/* Create Account Button */
-.btn-create-account {
-    background: #667eea;           
-    color: #fff;                    
-    border: none;
-    border-radius: 12px;
-    padding: 12px 24px;
-    width: 100%;
-    font-weight: 600;
-    font-size: 16px;
-    transition: all 0.2s ease;
-}
-
-/* Hover effect for Create Account button */
-.btn-create-account:hover {
-    background: white;                       /* turn button white */
-    color: #667eea;                          /* text becomes blue */
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); /* shadow for floating effect */
-    transform: translateY(-1px);             /* subtle lift */
-}
-
-    .auth-links p a {
-        color: #667eea;
+    .forgot-password a {
+        color: #0288D1;
+        font-size: 14px;
         font-weight: 500;
         text-decoration: none;
+        transition: all 0.3s ease;
     }
 
-    .auth-links p a:hover {
-        text-decoration: underline;
+    .forgot-password a:hover {
+        color: #00BCD4;
     }
 
+    /* Buttons */
+    .btn-ocean {
+        background: linear-gradient(135deg, #0288D1, #00BCD4, #009688);
+        border: none;
+        border-radius: 12px;
+        padding: 16px 24px;
+        font-weight: 600;
+        font-size: 16px;
+        width: 100%;
+        color: #fff;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 150, 136, 0.3);
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .btn-ocean::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s;
+    }
+
+    .btn-ocean:hover::before {
+        left: 100%;
+    }
+
+    .btn-ocean:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 150, 136, 0.4);
+    }
+
+    .btn-ocean:active {
+        transform: translateY(0);
+    }
+
+    .btn-create-account {
+        background: rgba(0, 188, 212, 0.1);
+        color: #0288D1;
+        border: 2px solid rgba(0, 188, 212, 0.3);
+        border-radius: 12px;
+        padding: 16px 24px;
+        width: 100%;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .btn-create-account:hover {
+        background: linear-gradient(135deg, #0288D1, #00BCD4);
+        color: white;
+        border-color: transparent;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 150, 136, 0.3);
+    }
+
+    /* Divider */
     .divider {
-        margin: 20px 0;
+        margin: 30px 0 20px;
         position: relative;
         text-align: center;
     }
 
     .divider span {
-        background: #fff;
-        padding: 0 10px;
-        font-weight: 500;
-        color: #764ba2;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 0 15px;
+        font-weight: 600;
+        color: #546e7a;
         z-index: 1;
         position: relative;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .divider:before {
@@ -211,7 +599,51 @@
         left: 0;
         width: 100%;
         height: 1px;
-        background: #e0e0e0;
+        background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.3), transparent);
+        z-index: 0;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+        .auth-split-layout {
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+
+        .auth-welcome-side {
+            text-align: center;
+        }
+
+        .welcome-content {
+            max-width: 100%;
+        }
+
+        .welcome-icon {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .highlight-item {
+            justify-content: center;
+        }
+
+        .highlight-item:hover {
+            transform: translateY(-5px);
+        }
+    }
+
+    @media (max-width: 576px) {
+        .auth-card {
+            padding: 40px 30px;
+        }
+
+        .welcome-title {
+            font-size: 36px;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+        }
     }
 </style>
 {% endblock %}

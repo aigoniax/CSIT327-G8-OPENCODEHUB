@@ -7,6 +7,18 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* 🌊 CSS Variables for New Oceanic Theme */
+        :root {
+            --color-primary-blue: #0077ff; /* Blue */
+            --color-secondary-cyan: #00e5ff; /* Cyan */
+            --color-accent-teal: #009688; /* Teal */
+            --color-highlight-emerald: #00c853; /* Emerald */
+            --oceanic-gradient: linear-gradient(135deg, var(--color-primary-blue) 0%, var(--color-secondary-cyan) 50%, var(--color-accent-teal) 100%);
+            --oceanic-box-shadow: 0 8px 20px rgba(0, 119, 255, 0.4);
+            --oceanic-light-shadow: 0 4px 12px rgba(0, 119, 255, 0.2);
+            --success-gradient: linear-gradient(135deg, var(--color-highlight-emerald) 0%, #30b05d 100%);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -14,17 +26,17 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #ffffff;
+            font-family: 'Poppins', sans-serif; /* Changed font for modern feel */
+            background: #f0f4f8; /* Light background for contrast with glass elements */
             color: #1d1d1f;
             min-height: 100vh;
         }
 
-        /* Gradient Header */
+        /* Gradient Header - Updated to Oceanic Gradient */
         .gradient-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--oceanic-gradient);
             padding: 1rem 0;
-            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 119, 255, 0.4); /* Shadow reflects blue primary color */
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -48,63 +60,51 @@
         }
 
         .navbar-nav .nav-link:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15); /* Slightly stronger hover */
             color: white !important;
         }
 
-        /* Card Styling with Gradient Hover */
+        /* Card Styling with Light Glassmorphism Effect */
         .card {
             border: none;
             border-radius: 20px;
-            background: linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            background: rgba(255, 255, 255, 0.85); /* Light glass effect */
+            backdrop-filter: blur(5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            border: 1px solid rgba(0, 119, 255, 0.1); /* Subtle border */
         }
 
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            opacity: 0;
-            transition: opacity 0.4s ease;
-            pointer-events: none;
-        }
-
+        /* Card Hover Effect - Subtle Primary Glow */
         .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+            transform: translateY(-5px); /* Reduced hover lift for consistency */
+            box-shadow: 0 15px 30px rgba(0, 119, 255, 0.15);
         }
-
-        .card:hover::before {
-            opacity: 1;
-        }
+        
+        /* Removed card::before since the background is now a light glass effect */
 
         .card-body {
             position: relative;
             z-index: 1;
         }
 
-        /* Project Header Card */
+        /* Project Header Card - Updated Border and Shadow */
         .project-header-card {
-            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            background: rgba(255, 255, 255, 0.95);
             padding: 2.5rem;
             border-radius: 20px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
             margin-bottom: 2rem;
-            border: 1px solid rgba(102, 126, 234, 0.1);
+            border: 2px solid var(--color-secondary-cyan); /* Cyan border */
             transition: all 0.4s ease;
         }
 
         .project-header-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 16px 32px rgba(102, 126, 234, 0.15);
-            border-color: rgba(102, 126, 234, 0.3);
+            box-shadow: 0 16px 32px rgba(0, 119, 255, 0.1);
+            border-color: var(--color-primary-blue); /* Blue on hover */
         }
 
         .project-header-card h2 {
@@ -114,54 +114,59 @@
             font-size: 2rem;
         }
 
-        /* Buttons with Gradient */
+        /* Buttons with Oceanic Gradient - Updated Colors */
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--oceanic-gradient);
             border: none;
             border-radius: 12px;
             padding: 0.75rem 1.5rem;
             font-weight: 600;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: var(--oceanic-light-shadow);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-            background: linear-gradient(135deg, #5a6fd8 0%, #6a3f8f 100%);
+            box-shadow: var(--oceanic-box-shadow);
+            opacity: 0.95;
+            filter: brightness(1.1); /* Slight brightness change on hover */
         }
 
+        /* Buttons with Success Gradient - Updated Colors */
         .btn-success {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            background: var(--success-gradient);
             border: none;
             border-radius: 12px;
             padding: 0.75rem 1.5rem;
             font-weight: 600;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3); /* Emerald shadow */
         }
 
         .btn-success:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(40, 167, 69, 0.4);
-            background: linear-gradient(135deg, #218838 0%, #1fa77f 100%);
+            box-shadow: 0 8px 20px rgba(0, 200, 83, 0.4);
+            opacity: 0.95;
+            filter: brightness(1.1);
         }
-
+        
+        /* Secondary/Outline Button - Uses Teal/Cyan/Blue */
         .btn-outline-secondary {
-            border: 2px solid #e5e5e5;
+            border: 2px solid var(--color-accent-teal);
             border-radius: 12px;
             padding: 0.65rem 1.5rem;
             font-weight: 600;
             transition: all 0.3s ease;
             background: white;
+            color: var(--color-accent-teal);
         }
 
         .btn-outline-secondary:hover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--oceanic-gradient);
             border-color: transparent;
             color: white !important;
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: var(--oceanic-box-shadow);
         }
 
         .btn-sm {
@@ -169,7 +174,7 @@
             padding: 0.5rem 1rem;
         }
 
-        /* Badge Styling */
+        /* Badge Styling - Updated Colors */
         .badge {
             border-radius: 10px;
             padding: 0.5rem 1rem;
@@ -178,20 +183,21 @@
         }
 
         .bg-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            background: var(--oceanic-gradient) !important;
         }
 
         .bg-success {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+            background: var(--success-gradient) !important;
         }
 
         .bg-warning {
-            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%) !important;
+            /* Keeping original warning gradient, but slightly fresher */
+            background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%) !important;
         }
 
-        /* List Group Items */
+        /* List Group Items - Updated Hover/Border */
         .list-group-item {
-            border: 1px solid #f0f0f0;
+            border: 1px solid rgba(0, 119, 255, 0.1);
             border-radius: 12px !important;
             margin-bottom: 0.75rem;
             transition: all 0.3s ease;
@@ -200,11 +206,11 @@
 
         .list-group-item:hover {
             transform: translateX(4px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
-            border-color: rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 119, 255, 0.15);
+            border-color: var(--color-secondary-cyan); /* Cyan border on hover */
         }
 
-        /* Input Fields */
+        /* Input Fields - Updated Focus Color */
         .form-control {
             border: 2px solid #e5e5e5;
             border-radius: 12px;
@@ -214,22 +220,23 @@
         }
 
         .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: var(--color-primary-blue);
+            box-shadow: 0 0 0 3px rgba(0, 119, 255, 0.15);
         }
 
-        /* Alert Boxes */
+        /* Alert Boxes - Updated Border Colors */
         .alert {
             border: none;
             border-radius: 15px;
             padding: 1.25rem;
-            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            background: rgba(255, 255, 255, 0.95);
             border-left: 4px solid;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
         .alert-info {
-            border-left-color: #667eea;
-            background: linear-gradient(145deg, rgba(102, 126, 234, 0.05) 0%, rgba(102, 126, 234, 0.02) 100%);
+            border-left-color: var(--color-secondary-cyan);
+            background: linear-gradient(145deg, rgba(0, 229, 255, 0.05) 0%, rgba(0, 229, 255, 0.02) 100%);
         }
 
         .alert-warning {
@@ -237,26 +244,26 @@
             background: linear-gradient(145deg, rgba(255, 193, 7, 0.05) 0%, rgba(255, 193, 7, 0.02) 100%);
         }
 
-        /* Share Section Styling */
+        /* Share Section Styling - Updated Border and Shadow */
         .shareable-link-section {
-            background: linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%);
-            border: 2px solid rgba(102, 126, 234, 0.1);
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(0, 119, 255, 0.1);
             border-radius: 15px;
             padding: 1.5rem;
             transition: all 0.3s ease;
         }
 
         .shareable-link-section:hover {
-            border-color: rgba(102, 126, 234, 0.3);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+            border-color: var(--color-secondary-cyan);
+            box-shadow: 0 4px 12px rgba(0, 119, 255, 0.1);
         }
 
-        /* User Avatar */
+        /* User Avatar - Updated Gradient */
         .user-avatar-small {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--oceanic-gradient);
             color: white;
             display: flex;
             align-items: center;
@@ -264,13 +271,13 @@
             font-size: 14px;
             font-weight: 700;
             flex-shrink: 0;
-            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 8px rgba(0, 119, 255, 0.3);
         }
 
-        /* Version Timeline */
+        /* Version Timeline - Updated Colors */
         .version-item {
             border-left: 3px solid transparent;
-            background: linear-gradient(to right, rgba(102, 126, 234, 0.05), transparent);
+            background: linear-gradient(to right, rgba(0, 119, 255, 0.05), transparent);
             padding: 1.5rem;
             border-radius: 12px;
             margin-bottom: 1rem;
@@ -278,14 +285,14 @@
         }
 
         .version-item:hover {
-            border-left-color: #667eea;
-            background: linear-gradient(to right, rgba(102, 126, 234, 0.1), rgba(102, 126, 234, 0.02));
+            border-left-color: var(--color-primary-blue);
+            background: linear-gradient(to right, rgba(0, 119, 255, 0.1), rgba(0, 119, 255, 0.02));
             transform: translateX(4px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+            box-shadow: 0 4px 12px rgba(0, 119, 255, 0.15);
         }
 
         .version-marker {
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+            box-shadow: 0 0 0 4px rgba(0, 119, 255, 0.2);
         }
 
         /* Container */
@@ -295,48 +302,50 @@
 
         /* Smooth Animations */
         * {
+            /* Removed global transition for better performance, only apply to specific elements */
             transition: all 0.3s ease;
         }
-
-        /* Custom Scrollbar */
+        
+        /* Custom Scrollbar - Updated Gradient */
         ::-webkit-scrollbar {
             width: 10px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: #e0e7ee; /* Lighter track */
         }
 
         ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--oceanic-gradient);
             border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #5a6fd8 0%, #6a3f8f 100%);
+            opacity: 0.9;
+            filter: brightness(1.1);
         }
 
-        /* Back Button Enhancement */
+        /* Back Button Enhancement - Updated Colors */
         .cs-button-6 {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
             padding: 0.75rem 1.5rem;
             background: white;
-            color: #667eea;
+            color: var(--color-primary-blue);
             text-decoration: none;
             border-radius: 12px;
             font-weight: 600;
             font-size: 1rem;
             transition: all 0.3s ease;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            border: 2px solid rgba(102, 126, 234, 0.2);
+            border: 2px solid rgba(0, 119, 255, 0.2);
         }
         
         .cs-button-6:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.25);
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: var(--oceanic-box-shadow);
+            background: var(--oceanic-gradient);
             color: white;
             border-color: transparent;
         }
@@ -351,7 +360,6 @@
     </style>
 </head>
 <body>
-    <!-- Gradient Header -->
     <nav class="gradient-header">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center">
@@ -368,7 +376,6 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     {% block content %}
     {% endblock %}
 
