@@ -67,6 +67,9 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('profile/update/', views.update_profile, name='update_profile'),
     path('profile/<str:username>/', views.profile, name='user_profile'),
+    
+    # Settings
+    path('settings/', views.settings_view, name='settings'),
 
     #
     path('api/search/', views.search_projects, name='search_projects'),
