@@ -18,35 +18,60 @@
     --blur-amount: blur(12px);
 }
 
+/* PROJECT MENU BUTTON & DROPDOWN */
+.project-menu {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10;
+}
+
 .menu-btn {
-    background: none;
-    border: none;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #e5e7eb;
     cursor: pointer;
-    padding: 8px;
-    border-radius: 4px;
-    color: #86868b;
+    padding: 6px 10px;
+    border-radius: 6px;
+    color: #6b7280;
+    transition: all 0.2s;
+    font-size: 14px;
 }
 
 .menu-btn:hover {
-    background: #f0f0f0;
+    background: white;
+    border-color: var(--primary-blue);
+    color: var(--primary-blue);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
 }
 
 .project-dropdown {
     display: none;
     position: absolute;
     right: 0;
-    top: 100%;
+    top: calc(100% + 4px);
     background: white;
-    border: 1px solid #e5e5e5;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     min-width: 180px;
     z-index: 1000;
-    margin-top: 4px;
+    overflow: hidden;
 }
 
 .project-dropdown.show {
     display: block;
+    animation: dropdownSlide 0.2s ease;
+}
+
+@keyframes dropdownSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .dropdown-item {
@@ -62,18 +87,24 @@
     width: 100%;
     text-align: left;
     cursor: pointer;
+    transition: background 0.2s;
 }
 
 .dropdown-item:hover {
-    background: #f0f0f0;
+    background: #f3f4f6;
+}
+
+.dropdown-item i {
+    width: 16px;
+    text-align: center;
 }
 
 .dropdown-item:first-child {
-    border-radius: 8px 8px 0 0;
+    border-radius: 10px 10px 0 0;
 }
 
 .dropdown-item:last-child {
-    border-radius: 0 0 8px 8px;
+    border-radius: 0 0 10px 10px;
 }
 
 .dropdown-item-danger {
@@ -81,11 +112,8 @@
 }
 
 .dropdown-item-danger:hover {
-    background: #ffe6e6;
-}
-
-.project-menu {
-    position: relative;
+    background: #fee2e2;
+    color: #dc3545;
 }
 
 /* ========== STAT CARDS ========== */
@@ -230,20 +258,16 @@
 }
 
 .project-card-item {
-    /* Inner Glass Card */
+    /* Inner Glass Card with menu positioning */
     background: rgba(255, 255, 255, 0.4);  
     border: 1px solid #e5e7eb;
     padding: 18px;
     border-radius: 16px;
     
     /* Animation settings */
-    cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    text-decoration: none;
-    color: inherit;
-    display: block;
     position: relative;
-    overflow: hidden;
+    overflow: visible; /* Changed to show dropdown menu */
 }
 
 .project-card-item:hover {
@@ -263,10 +287,19 @@
     background: linear-gradient(to bottom, var(--primary-blue), var(--secondary-cyan));
     opacity: 0;
     transition: opacity 0.3s ease;
+    border-radius: 16px 0 0 16px;
 }
 
 .project-card-item:hover::before {
     opacity: 1;
+}
+
+/* Make the link area not interfere with menu button */
+.project-card-item > a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    cursor: pointer;
 }
 
 .project-card-header {
@@ -274,6 +307,7 @@
     align-items: flex-start;
     gap: 16px;
     margin-bottom: 12px;
+    padding-right: 40px; /* Space for menu button */
 }
 
 .project-card-icon {
@@ -295,6 +329,7 @@
     font-weight: 600;
     color: #1e293b;
     flex: 1;
+    line-height: 1.4;
 }
 
 .project-card-badge {
@@ -305,6 +340,7 @@
     border: 1px solid rgba(20, 184, 166, 0.2);
     border-radius: 20px;
     font-weight: 700;
+    white-space: nowrap;
 }
 
 .project-card-meta {
@@ -318,20 +354,27 @@
     border-top: 1px dashed rgba(0,0,0,0.05); 
 }
 
+.project-card-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
 .project-card-meta-item i {
     color: var(--secondary-cyan); 
+    font-size: 11px;
 }
 
 /* ========== TEAM CONTRIBUTIONS SECTION ========== */
 .contributions-section {
-    background: var(--glass-bg);           /* Semi-transparent white */
-    backdrop-filter: var(--blur-amount);   /* Blur behind the glass */
-    -webkit-backdrop-filter: var(--blur-amount); /* For Safari */
+    background: var(--glass-bg);
+    backdrop-filter: var(--blur-amount);
+    -webkit-backdrop-filter: var(--blur-amount);
     border: var(--glass-border);
     box-shadow: var(--glass-shadow);
-    border-radius: 24px;                   /* Match project section corners */
+    border-radius: 24px;
     padding: 28px;
-    height: 100%;                          /* Ensure it fills the grid column */
+    height: 100%;
 }
 
 .contribution-header {
@@ -414,7 +457,7 @@
 
 .donut-center-label {
     font-size: 12px;
-    color: #6b7280; /* Clearer gray */
+    color: #6b7280;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -482,6 +525,33 @@
 .no-data-message p {
     font-size: 13px;
 }
+
+/* ========== RESPONSIVE DESIGN ========== */
+@media (max-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stat-cards-horizontal {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .stat-cards-horizontal {
+        grid-template-columns: 1fr;
+    }
+    
+    .project-card-header {
+        flex-wrap: wrap;
+        padding-right: 40px;
+    }
+    
+    .project-menu {
+        top: 8px;
+        right: 8px;
+    }
+}
 </style>
 <div class="content-header">
     <h1>Welcome to OpenCodeHub</h1>
@@ -532,29 +602,50 @@
         {% if projects %}
         <div class="project-cards-grid">
             {% for project in projects %}
-            <a href="{% url 'project_detail' project.id %}" class="project-card-item">
-                <div class="project-card-header">
-                    <div class="project-card-icon">
-                        <i class="fas fa-folder"></i>
+            <div class="project-card-item">
+                <!-- Make the main area clickable -->
+                <a href="{% url 'project_detail' project.id %}" style="text-decoration: none; color: inherit; display: block;">
+                    <div class="project-card-header">
+                        <div class="project-card-icon">
+                            <i class="fas fa-folder"></i>
+                        </div>
+                        <div class="project-card-title">{{ project.title }}</div>
+                        {% if project.shared_with.all.count > 0 %}
+                        <span class="project-card-badge">
+                            <i class="fas fa-users"></i> Shared
+                        </span>
+                        {% endif %}
                     </div>
-                    <div class="project-card-title">{{ project.title }}</div>
-                    {% if project.shared_with.all.count > 0 %}
-                    <span class="project-card-badge">
-                        <i class="fas fa-users"></i> Shared
-                    </span>
-                    {% endif %}
+                    <div class="project-card-meta">
+                        <div class="project-card-meta-item">
+                            <i class="fas fa-users"></i>
+                            <span>{{ project.shared_with.all.count|add:"1" }} member{{ project.shared_with.all.count|add:"1"|pluralize }}</span>
+                        </div>
+                        <div class="project-card-meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>{{ project.updated_at|timesince }} ago</span>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- Three-dot menu (positioned absolutely) -->
+                <div class="project-menu">
+                    <button class="menu-btn" onclick="toggleProjectMenu({{ project.id }}); event.stopPropagation();" title="More options">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    
+                    <div class="project-dropdown" id="projectMenu{{ project.id }}">
+                        <a href="{% url 'project_detail' project.id %}" class="dropdown-item">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <button type="button" 
+                                class="dropdown-item dropdown-item-danger" 
+                                onclick="confirmDelete({{ project.id }}, '{{ project.title|escapejs }}')">
+                            <i class="fas fa-trash"></i> Move to Trash
+                        </button>
+                    </div>
                 </div>
-                <div class="project-card-meta">
-                    <div class="project-card-meta-item">
-                        <i class="fas fa-users"></i>
-                        <span>{{ project.shared_with.all.count|add:"1" }} member{{ project.shared_with.all.count|add:"1"|pluralize }}</span>
-                    </div>
-                    <div class="project-card-meta-item">
-                        <i class="fas fa-clock"></i>
-                        <span>{{ project.updated_at|timesince }} ago</span>
-                    </div>
-                </div>
-            </a>
+            </div>
             {% endfor %}
         </div>
         {% else %}
