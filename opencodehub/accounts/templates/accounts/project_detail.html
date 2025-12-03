@@ -173,51 +173,129 @@
     <div class="card-body">
       <h5 class="card-title">
         <i class="fas fa-file text-primary"></i> Files
+        {% if files %}
+          <span class="badge bg-primary rounded-pill">{{ files.count }}</span>
+        {% endif %}
       </h5>
+      
       {% if files %}
-        <ul class="list-group list-group-flush">
+        <div class="list-group list-group-flush">
           {% for file in files %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div class="list-group-item d-flex justify-content-between align-items-center" style="border-radius: 10px; margin-bottom: 8px;">
+            <div class="d-flex align-items-center flex-grow-1">
+              <!-- IMAGE THUMBNAIL PREVIEW -->
+              {% if file.file_type|lower in 'jpg,jpeg,png,gif,webp,svg,bmp' %}
+                <img 
+                  src="{% url 'serve_file' project.id file.id %}" 
+                  alt="{{ file.name }}"
+                  class="me-3 rounded shadow-sm"
+                  style="width: 60px; height: 60px; object-fit: cover; cursor: pointer; border: 2px solid #e9ecef;"
+                  data-bs-toggle="modal" 
+                  data-bs-target="#imageModal{{ file.id }}"
+                  title="Click to preview"
+                >
+              {% else %}
+                <div class="file-icon-wrapper me-3">
+                  <i class="fas fa-file-alt fa-2x text-muted"></i>
+                </div>
+              {% endif %}
+              
               <div class="flex-grow-1">
-                <i class="fas fa-file-alt text-muted me-2"></i>
-                <a href="{% url 'view_edit_file' project.id file.id %}">{{ file.name }}</a>
-              </div>
-              <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-secondary">{{ file.size|filesizeformat }}</span>
-                
-                {% comment %} Open file button {% endcomment %}
-                <a href="{% url 'view_edit_file' project.id file.id %}" 
-                  class="btn btn-sm btn-primary" 
-                  style="border-radius: 8px;"
-                  title="Open file">
-                  <i class="fas fa-external-link-alt"></i>
+                <a href="{% url 'view_edit_file' project.id file.id %}" class="text-decoration-none">
+                  <strong>{{ file.name }}</strong>
                 </a>
-                
-                {% comment %} Download button {% endcomment %}
-                <a href="{{ file.file.url }}" 
-                  download 
-                  class="btn btn-sm btn-info" 
-                  style="border-radius: 8px;"
-                  title="Download file">
-                  <i class="fas fa-download"></i>
-                </a>
-                
-                {% comment %} Show delete button if user has permission {% endcomment %}
-                {% if project.owner == user or user|has_edit_permission:project and project.allow_collaborators_delete %}
-                <button type="button" 
-                        class="btn btn-sm btn-danger" 
-                        onclick="showDeleteModal('{{ file.id }}', '{{ file.name }}')"
-                        style="border-radius: 8px;"
-                        title="Delete file">
-                  <i class="fas fa-trash"></i>
-                </button>
-                {% endif %}
+                <br>
+                <small class="text-muted">
+                  <i class="fas fa-hdd"></i> {{ file.size|filesizeformat }}
+                  <span class="mx-2">•</span>
+                  <i class="fas fa-clock"></i> {{ file.uploaded_at|timesince }} ago
+                </small>
               </div>
-            </li>
+            </div>
+            
+            <div class="btn-group" role="group">
+              <!-- View/Edit Button -->
+              <a href="{% url 'view_edit_file' project.id file.id %}" 
+                class="btn btn-sm btn-primary" 
+                style="border-radius: 8px 0 0 8px;"
+                title="View/Edit file">
+                <i class="fas fa-eye"></i>
+              </a>
+              
+              <!-- Download Button -->
+              <a href="{{ file.file.url }}" 
+                download 
+                class="btn btn-sm btn-info" 
+                style="border-radius: 0;"
+                title="Download file">
+                <i class="fas fa-download"></i>
+              </a>
+              
+              <!-- Delete Button (if user has permission) -->
+              {% if project.owner == user or user|has_edit_permission:project and project.allow_collaborators_delete %}
+              <button type="button" 
+                      class="btn btn-sm btn-danger" 
+                      onclick="showDeleteModal('{{ file.id }}', '{{ file.name }}')"
+                      style="border-radius: 0 8px 8px 0;"
+                      title="Delete file">
+                <i class="fas fa-trash"></i>
+              </button>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Quick Preview Modal for Images -->
+          {% if file.file_type|lower in 'jpg,jpeg,png,gif,webp,svg,bmp' %}
+          <div class="modal fade" id="imageModal{{ file.id }}" tabindex="-1" aria-labelledby="imageModalLabel{{ file.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+              <div class="modal-content" style="border-radius: 15px; border: none;">
+                <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px 15px 0 0;">
+                  <h5 class="modal-title" id="imageModalLabel{{ file.id }}">
+                    <i class="fas fa-image"></i> {{ file.name }}
+                  </h5>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center p-4" style="background-color: #f8f9fa;">
+                  <img 
+                    src="{% url 'serve_file' project.id file.id %}" 
+                    alt="{{ file.name }}"
+                    class="img-fluid rounded shadow"
+                    style="max-height: 70vh;"
+                  >
+                  <div class="mt-3">
+                    <small class="text-muted">
+                      <i class="fas fa-hdd"></i> {{ file.size|filesizeformat }}
+                      <span class="mx-2">•</span>
+                      <i class="fas fa-clock"></i> Uploaded {{ file.uploaded_at|timesince }} ago
+                    </small>
+                  </div>
+                </div>
+                <div class="modal-footer" style="border-top: none; padding: 1rem 2rem 2rem 2rem;">
+                  <a href="{% url 'view_edit_file' project.id file.id %}" 
+                    class="btn btn-primary" style="border-radius: 10px;">
+                    <i class="fas fa-expand"></i> Full View
+                  </a>
+                  <a href="{{ file.file.url }}" 
+                    download 
+                    class="btn btn-success" style="border-radius: 10px;">
+                    <i class="fas fa-download"></i> Download
+                  </a>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 10px;">
+                    <i class="fas fa-times"></i> Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
           {% endfor %}
-        </ul>
+        </div>
       {% else %}
-        <p class="text-muted">No files uploaded yet.</p>
+        <div class="alert alert-info text-center py-4" style="border-radius: 12px;">
+          <i class="fas fa-folder-open fa-3x text-muted mb-3 d-block"></i>
+          <p class="mb-0">No files uploaded yet.</p>
+        </div>
       {% endif %}
       
       <!-- Show upload buttons for owner and users with edit permission -->

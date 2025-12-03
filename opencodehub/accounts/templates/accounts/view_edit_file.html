@@ -16,7 +16,9 @@
         <div class="d-flex justify-content-between align-items-start">
         <div>
             <h2>
-            {% if file_type == 'word' %}
+            {% if file_type == 'image' %}
+                <i class="fas fa-image text-info"></i>
+            {% elif file_type == 'word' %}
                 <i class="fas fa-file-word text-primary"></i>
             {% elif file_type == 'excel' %}
                 <i class="fas fa-file-excel text-success"></i>
@@ -51,12 +53,74 @@
         </div>
     </div>
 
-    <!-- File Content -->
-    {% if is_editable %}
+    <!-- FILE CONTENT RENDERING BASED ON TYPE -->
     
-        {% if file_type == 'text' %}
-        <!-- TEXT EDITOR -->
-        <div class="card shadow-sm" style="border-radius: 15px;">
+    <!-- IMAGE PREVIEW -->
+    {% if file_type == 'image' %}
+    <div class="card shadow-sm" style="border-radius: 15px;">
+        <div class="card-body text-center" style="background-color: #f8f9fa;">
+            <div class="mb-3">
+                <span class="badge bg-info" style="border-radius: 8px;">
+                    <i class="fas fa-image"></i> Image Preview
+                </span>
+            </div>
+            
+            <!-- Image Container with zoom controls -->
+            <div class="position-relative d-inline-block">
+                <img 
+                    id="imagePreview" 
+                    src="{% url 'serve_file' project.id file.id %}" 
+                    alt="{{ file.name }}"
+                    class="img-fluid rounded shadow"
+                    style="max-width: 100%; max-height: 70vh; cursor: zoom-in;"
+                    onclick="toggleZoom(this)"
+                >
+                
+                <!-- Image controls -->
+                <div class="mt-3">
+                    <button class="btn btn-sm btn-outline-primary" onclick="zoomIn()" style="border-radius: 8px;">
+                        <i class="fas fa-search-plus"></i> Zoom In
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary" onclick="zoomOut()" style="border-radius: 8px;">
+                        <i class="fas fa-search-minus"></i> Zoom Out
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary" onclick="resetZoom()" style="border-radius: 8px;">
+                        <i class="fas fa-compress"></i> Reset
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary" onclick="openFullscreen()" style="border-radius: 8px;">
+                        <i class="fas fa-expand"></i> Fullscreen
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Image metadata -->
+            <div class="mt-4 text-start">
+                <h5><i class="fas fa-info-circle text-primary"></i> Image Details</h5>
+                <table class="table table-sm table-bordered">
+                    <tr>
+                        <td style="width: 30%;"><strong>File Name:</strong></td>
+                        <td>{{ file.name }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>File Type:</strong></td>
+                        <td>{{ file.file_type|upper }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>File Size:</strong></td>
+                        <td>{{ file.size|filesizeformat }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Uploaded:</strong></td>
+                        <td>{{ file.uploaded_at|date:"F d, Y h:i A" }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEXT EDITOR -->
+    {% elif file_type == 'text' %}
+    <div class="card shadow-sm" style="border-radius: 15px;">
         <div class="card-body p-0">
             <form method="POST" id="editFileForm">
             {% csrf_token %}
@@ -87,11 +151,17 @@
             >{{ file_content }}</textarea>
             </form>
         </div>
-        </div>
-        
-        {% elif file_type == 'word' %}
-        <!-- WORD EDITOR -->
-        <div class="card shadow-sm" style="border-radius: 15px;">
+    </div>
+
+    {% if can_edit %}
+    <div class="alert alert-info mt-3" style="border-radius: 12px;">
+        <i class="fas fa-info-circle"></i> <strong>Note:</strong> Changes will create a new version in the project history.
+    </div>
+    {% endif %}
+
+    <!-- WORD EDITOR -->
+    {% elif file_type == 'word' %}
+    <div class="card shadow-sm" style="border-radius: 15px;">
         <div class="card-body p-0">
             <form method="POST" id="editFileForm">
             {% csrf_token %}
@@ -123,21 +193,25 @@
             <input type="hidden" name="content" id="wordContent">
             </form>
         </div>
-        </div>
-        
-        {% elif file_type == 'excel' %}
-        <!-- EXCEL EDITOR -->
-        <div class="card shadow-sm" style="border-radius: 15px;">
+    </div>
+
+    {% if can_edit %}
+    <div class="alert alert-info mt-3" style="border-radius: 12px;">
+        <i class="fas fa-info-circle"></i> <strong>Note:</strong> Changes will create a new version in the project history.
+    </div>
+    {% endif %}
+
+    <!-- EXCEL EDITOR -->
+    {% elif file_type == 'excel' %}
+    <div class="card shadow-sm" style="border-radius: 15px;">
         <div class="card-body p-0">
             <form method="POST" id="editFileForm">
             {% csrf_token %}
             
-            <!-- Added row/column count display -->
             <div class="editor-header" style="background: #217346; padding: 1rem 1.5rem; border-bottom: 1px solid #dee2e6; border-radius: 15px 15px 0 0;">
                 <div class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-0" style="color: white;">
                     <i class="fas fa-file-excel"></i> Excel Spreadsheet Editor
-                    <!-- Shows dimensions of spreadsheet -->
                     <small style="opacity: 0.8; font-size: 0.85rem; margin-left: 1rem;">
                         {{ excel_data.headers|length }} columns × {{ excel_data.rows|length }} rows
                     </small>
@@ -161,26 +235,20 @@
                 </div>
             </div>
             
-            <!-- Added max-height, better overflow handling, and scrollable container -->
             <div class="table-responsive p-3" style="background: white; border-radius: 0 0 15px 15px; max-height: 600px; overflow: auto;">
-                <!-- Check if headers exist before displaying table -->
                 {% if excel_data.headers %}
                 <table class="table table-bordered" id="excelTable" style="margin-bottom: 0;">
-                <!-- Made headers sticky so they stay visible when scrolling -->
                 <thead class="table-light" style="position: sticky; top: 0; z-index: 10;">
                     <tr id="headerRow">
                     {% for header in excel_data.headers %}
-                    <!-- Added min-width to prevent cramped columns -->
                     <th contenteditable="{% if can_edit %}true{% else %}false{% endif %}" class="excel-cell" style="min-width: 150px;">{{ header }}</th>
                     {% endfor %}
-                    <!-- Empty header cell for delete button column -->
                     {% if can_edit %}
                     <th style="width: 50px; background: #f8f9fa;"></th>
                     {% endif %}
                     </tr>
                 </thead>
                 <tbody id="excelBody">
-                    <!-- Check if rows exist -->
                     {% if excel_data.rows %}
                         {% for row in excel_data.rows %}
                         <tr>
@@ -188,7 +256,6 @@
                         <td contenteditable="{% if can_edit %}true{% else %}false{% endif %}" class="excel-cell">{{ cell }}</td>
                         {% endfor %}
                         {% if can_edit %}
-                        <!-- Better vertical alignment for delete button -->
                         <td class="text-center" style="background: #f8f9fa; vertical-align: middle;">
                             <button type="button" class="btn btn-sm btn-danger" onclick="deleteRow(this)">
                             <i class="fas fa-times"></i>
@@ -198,7 +265,6 @@
                         </tr>
                         {% endfor %}
                     {% else %}
-                        <!-- Message when no data rows exist -->
                         <tr>
                             <td colspan="{{ excel_data.headers|length }}" class="text-center text-muted py-4">
                                 <i class="fas fa-table"></i> No data rows. Click "Add Row" to start adding data.
@@ -208,8 +274,7 @@
                 </tbody>
                 </table>
                 {% else %}
-                <!-- Warning message if file couldn't be read -->
-                <div class="alert alert-warning m-3">
+                <div class="alert alert-warning m-3" style="border-radius: 12px;">
                     <i class="fas fa-exclamation-triangle"></i> 
                     <strong>No data found in this Excel file.</strong>
                     The file may be empty or could not be read properly.
@@ -220,23 +285,21 @@
             <input type="hidden" name="excel_data" id="excelData">
             </form>
         </div>
-        </div>
-        <!-- END EXCEL EDITOR -->
-        {% endif %}
-        
-        {% if can_edit %}
-        <div class="alert alert-info mt-3" style="border-radius: 12px;">
+    </div>
+
+    {% if can_edit %}
+    <div class="alert alert-info mt-3" style="border-radius: 12px;">
         <i class="fas fa-info-circle"></i> <strong>Note:</strong> Changes will create a new version in the project history.
-        </div>
-        {% endif %}
-    
+    </div>
+    {% endif %}
+
+    <!-- UNSUPPORTED FILE TYPE -->
     {% else %}
-    <!-- Non-editable file message -->
     <div class="card shadow-sm" style="border-radius: 15px;">
         <div class="card-body text-center py-5">
         <i class="fas fa-file" style="font-size: 4rem; color: #ddd;"></i>
         <h4 class="mt-3 mb-2">Cannot Preview This File</h4>
-        <p class="text-muted">This file type ({{ file.file_type|upper }}) cannot be edited in the browser.</p>
+        <p class="text-muted">This file type ({{ file.file_type|upper }}) cannot be previewed or edited in the browser.</p>
         <p class="text-muted small">Please download the file to view or edit it locally.</p>
         <a href="{{ file.file.url }}" download class="btn btn-primary mt-3" style="border-radius: 12px;">
             <i class="fas fa-download"></i> Download File
@@ -295,40 +358,45 @@
         line-height: 1.6;
     }
 
-    /* EXCEL CELL STYLES */
+    /* Image zoom styles */
+    .zoomed {
+        cursor: zoom-out !important;
+        max-width: none !important;
+        max-height: none !important;
+        width: auto !important;
+    }
+
+    #imagePreview {
+        transition: transform 0.3s ease;
+    }
+
+    /* Excel cell styles */
     .excel-cell {
-        min-width: 120px;           // Increased from 100px 
-        max-width: 300px;           // Prevents cells from being too wide
-        padding: 8px 12px;          // Better padding 
-        white-space: pre-wrap;      // Preserves line breaks 
-        word-wrap: break-word;      // Breaks long words 
-        vertical-align: top;        // Aligns content to top 
+        min-width: 120px;
+        max-width: 300px;
+        padding: 8px 12px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        vertical-align: top;
     }
 
     .excel-cell:focus {
         background: #e3f2fd;
         outline: 2px solid #2196f3;
-        outline-offset: -2px;       // Keeps outline inside cell 
+        outline-offset: -2px;
     }
 
     #excelTable {
         margin-bottom: 0;
-        font-size: 14px;            // Consistent font size
+        font-size: 14px;
     }
 
-    // Better header styling
     #excelTable thead th {
         background: #f8f9fa;
         font-weight: 600;
         border-bottom: 2px solid #dee2e6;
     }
 
-    // Sticky header for scrolling
-    .table-responsive {
-        position: relative;
-    }
-
-    // Better scrollbar styling 
     .table-responsive::-webkit-scrollbar {
         width: 10px;
         height: 10px;
@@ -349,6 +417,56 @@
 </style>
 
 <script>
+// ===== IMAGE ZOOM CONTROLS =====
+{% if file_type == 'image' %}
+let currentZoom = 1;
+
+function toggleZoom(img) {
+    img.classList.toggle('zoomed');
+    if (img.classList.contains('zoomed')) {
+        img.style.transform = 'scale(1.5)';
+        img.style.transition = 'transform 0.3s ease';
+    } else {
+        img.style.transform = 'scale(1)';
+    }
+}
+
+function zoomIn() {
+    currentZoom += 0.2;
+    applyZoom();
+}
+
+function zoomOut() {
+    if (currentZoom > 0.4) {
+        currentZoom -= 0.2;
+        applyZoom();
+    }
+}
+
+function resetZoom() {
+    currentZoom = 1;
+    applyZoom();
+}
+
+function applyZoom() {
+    const img = document.getElementById('imagePreview');
+    img.style.transform = `scale(${currentZoom})`;
+    img.style.transition = 'transform 0.3s ease';
+}
+
+function openFullscreen() {
+    const img = document.getElementById('imagePreview');
+    if (img.requestFullscreen) {
+        img.requestFullscreen();
+    } else if (img.webkitRequestFullscreen) {
+        img.webkitRequestFullscreen();
+    } else if (img.msRequestFullscreen) {
+        img.msRequestFullscreen();
+    }
+}
+{% endif %}
+
+// ===== TEXT EDITOR =====
 {% if file_type == 'text' %}
 const originalContent = `{{ file_content|escapejs }}`;
 
@@ -359,6 +477,7 @@ function resetContent() {
 }
 {% endif %}
 
+// ===== WORD EDITOR =====
 {% if file_type == 'word' %}
 const originalWordContent = `{{ file_content|escapejs }}`;
 
@@ -368,7 +487,6 @@ function resetContent() {
     }
 }
 
-// Capture Word editor content before submit
 document.getElementById('editFileForm').addEventListener('submit', function(e) {
     const editorContent = document.getElementById('wordEditor').innerHTML;
     document.getElementById('wordContent').value = editorContent;
@@ -379,8 +497,8 @@ document.getElementById('editFileForm').addEventListener('submit', function(e) {
 });
 {% endif %}
 
+// ===== EXCEL EDITOR =====
 {% if file_type == 'excel' %}
-// Excel data as JSON
 const originalExcelData = {{ excel_data|safe }};
 
 function addRow() { 
@@ -396,10 +514,10 @@ function addRow() {
         cell.textContent = '';
     }
     
-    // Add delete button
     const deleteCell = newRow.insertCell();
     deleteCell.className = 'text-center';
     deleteCell.style.background = '#f8f9fa';
+    deleteCell.style.verticalAlign = 'middle';
     deleteCell.innerHTML = '<button type="button" class="btn btn-sm btn-danger" onclick="deleteRow(this)"><i class="fas fa-times"></i></button>';
 }
 
@@ -452,16 +570,13 @@ function resetExcel() {
     }
 }
 
-// Capture Excel data before submit
 document.getElementById('editFileForm').addEventListener('submit', function(e) {
     const headers = [];
     const rows = [];
     
-    // Get headers
     const headerCells = document.querySelectorAll('#headerRow .excel-cell');
     headerCells.forEach(cell => headers.push(cell.textContent.trim()));
     
-    // Get rows
     const bodyRows = document.querySelectorAll('#excelBody tr');
     bodyRows.forEach(row => {
         const rowData = [];

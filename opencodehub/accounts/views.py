@@ -1279,6 +1279,35 @@ def toggle_delete_permission(request, project_id):
     
     return redirect('project_detail', project_id=project.id)
 
+# new view to serve images
+from django.http import FileResponse, Http404
+
+@login_required
+def serve_file(request, project_id, file_id):
+    """Serve a file for preview/download"""
+    project = get_object_or_404(Project, id=project_id)
+    file = get_object_or_404(ProjectFile, id=file_id, project=project)
+    
+    # Check permissions
+    if not project.is_public:
+        shared_project = SharedProject.objects.filter(project=project, user=request.user).first()
+        if project.owner != request.user and not shared_project:
+            raise Http404("File not found")
+    
+    try:
+        file.file.open('rb')
+        response = FileResponse(file.file, content_type=f'image/{file.file_type}')
+        
+        # For images, display inline; for others, force download
+        if file.file_type.lower() in ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp']:
+            response['Content-Disposition'] = f'inline; filename="{file.name}"'
+        else:
+            response['Content-Disposition'] = f'attachment; filename="{file.name}"'
+        
+        return response
+    except Exception as e:
+        raise Http404(f"File not found: {str(e)}")
+
 # VIEW/EDIT FILE
 @login_required
 def view_edit_file(request, project_id, file_id):
@@ -1304,12 +1333,19 @@ def view_edit_file(request, project_id, file_id):
     ]
     WORD_EXTENSIONS = ['docx', 'doc']
     EXCEL_EXTENSIONS = ['xlsx', 'xls']
+    IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico'] 
     
     file_extension = file.file_type.lower()
     file_type = 'unknown'
     file_content = None
     excel_data = None
     is_editable = False
+
+    # IMAGE FILES - NEW SECTION
+    if file_extension in IMAGE_EXTENSIONS:
+        file_type = 'image'
+        is_editable = False  # Images are not text-editable
+        # Image will be served via serve_file view
     
     # TEXT FILES
     if file_extension in TEXT_EXTENSIONS:

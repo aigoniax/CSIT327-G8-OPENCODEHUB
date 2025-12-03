@@ -52,6 +52,8 @@ urlpatterns = [
     path('projects/<int:project_id>/files/<int:file_id>/delete/', views.delete_file, name='delete_file'),
     path('projects/<int:project_id>/toggle-delete-permission/', views.toggle_delete_permission, name='toggle_delete_permission'),
     path('projects/<int:project_id>/files/<int:file_id>/view/', views.view_edit_file, name='view_edit_file'),
+    # File serving for preview (ADD THIS)
+    path('projects/<int:project_id>/files/<int:file_id>/serve/', views.serve_file, name='serve_file'),
 
     # Trash Management
     path('trash/', views.trash, name='trash'),
