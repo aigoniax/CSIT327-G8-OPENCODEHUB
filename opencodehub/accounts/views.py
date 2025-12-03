@@ -723,14 +723,14 @@ def shared_by_me(request):
         shared_with__isnull=False  # Only projects that have been shared
     ).distinct().prefetch_related('shared_with', 'versions').order_by('-updated_at')
     
-    # Apply search filter
+    # search filter
     if search_query:
         projects = projects.filter(
             Q(title__icontains=search_query) | 
             Q(description__icontains=search_query)
         )
     
-    # Build contribution data for each project
+    # contribution data for each project
     projects_contribution_data = {}
     for project in projects:
         # Get all versions/contributions for this project
@@ -1668,6 +1668,12 @@ def empty_trash(request):
 @login_required
 def profile(request, username=None):
     """View user profile with upload statistics - ONLY ACTIVE PROJECTS"""
+    # Get user's projects
+    projects = Project.objects.filter(
+        owner=request.user,
+        is_deleted=False  
+    ).order_by('-updated_at')
+
     if username:
         # View another user's profile
         profile_user = get_object_or_404(User, username=username)
@@ -1703,6 +1709,17 @@ def profile(request, username=None):
         project__in=active_projects,
         created_by=profile_user
     ).count()
+
+    # Get recent activities (last 5 projects updated)
+    recent_activities = []
+    for project in projects[:5]:
+        local_time = timezone.localtime(project.updated_at)
+        recent_activities.append({
+            'time': f"{local_time.strftime('%I:%M %p')}",
+            'project_name': project.title,
+            'description': f'Updated {local_time.strftime("%B %d, %Y")}'
+        })
+    
     
     context = {
         'profile_user': profile_user,
@@ -1712,6 +1729,7 @@ def profile(request, username=None):
         'total_versions': total_versions,
         'public_projects': public_projects,
         'is_own_profile': profile_user == request.user,
+        'recent_activities': recent_activities,
     }
     
     return render(request, 'accounts/profile.html', context)
