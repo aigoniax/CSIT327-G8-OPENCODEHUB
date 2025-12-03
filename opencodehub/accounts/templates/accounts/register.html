@@ -9,219 +9,595 @@
         display: none !important;
     }
 </style>
-<div class="register-container">
-    <div class="register-card">
-        <h1 class="register-title">Create an account</h1>
-        
-        <form method="post" class="register-form">
-            {% csrf_token %}
-            
-            <!-- First Name Field -->
-            <div class="form-group">
-                <label for="id_first_name">First Name</label>
-                {{ form.first_name }}
-                {% if form.first_name.errors %}
-                    <div class="error-message">
-                        {% for error in form.first_name.errors %}
-                            {{ error }}
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-            
-            <!-- Last Name Field -->
-            <div class="form-group">
-                <label for="id_last_name">Last Name</label>
-                {{ form.last_name }}
-                {% if form.last_name.errors %}
-                    <div class="error-message">
-                        {% for error in form.last_name.errors %}
-                            {{ error }}
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-            
-            <!-- Username Field -->
-            <div class="form-group">
-                <label for="id_username">Username</label>
-                {{ form.username }}
-                {% if form.username.errors %}
-                    <div class="error-message">
-                        {% for error in form.username.errors %}
-                            {{ error }}
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-            
-            <!-- Email Field -->
-            <div class="form-group">
-                <label for="id_email">Email</label>
-                {{ form.email }}
-                {% if form.email.errors %}
-                    <div class="error-message">
-                        {% for error in form.email.errors %}
-                            {{ error }}
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
 
-            <!-- Security Question Field -->
-            <div class="form-group">
-                <label for="id_security_question">Security Question</label>
-                {{ form.security_question }}
-                {% if form.security_question.errors %}
-                    <div class="error-message">
-                        {% for error in form.security_question.errors %}
-                            {{ error }}
-                        {% endfor %}
+<!-- Animated Background Orbs -->
+<div class="background-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="orb orb-4"></div>
+    <div class="orb orb-5"></div>
+</div>
+
+<div class="auth-container">
+    <div class="auth-split-layout">
+        <!-- Left Side: Welcome Content -->
+        <div class="auth-welcome-side">
+            <div class="welcome-content">
+                <div class="welcome-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h1 class="welcome-title">Join OpenCodeHub</h1>
+                <p class="welcome-subtitle">Start your journey and collaborate with others</p>
+                
+                <div class="feature-highlights">
+                    <div class="highlight-item">
+                        <div class="highlight-icon">
+                            <i class="fas fa-folder-open"></i>
+                        </div>
+                        <div class="highlight-text">
+                            <h3>Create Projects</h3>
+                            <p>Build and manage your projects with powerful tools and version control.</p>
+                        </div>
                     </div>
-                {% endif %}
-            </div>
-            
-            <!-- Security Answer Field -->
-            <div class="form-group">
-                <label for="id_security_answer">Security Answer</label>
-                {{ form.security_answer }}
-                <small style="color: #999; font-size: 12px;">This will be used to reset your password if you forget it</small>
-                {% if form.security_answer.errors %}
-                    <div class="error-message">
-                        {% for error in form.security_answer.errors %}
-                            {{ error }}
-                        {% endfor %}
+                    
+                    <div class="highlight-item">
+                        <div class="highlight-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="highlight-text">
+                            <h3>Team Collaboration</h3>
+                            <p>Work together with your team, share projects, and track contributions in real-time.</p>
+                        </div>
                     </div>
-                {% endif %}
+                    
+                    <div class="highlight-item">
+                        <div class="highlight-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div class="highlight-text">
+                            <h3>Discover & Share</h3>
+                            <p>Explore public projects and showcase your work to the community.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
-            <!-- Password Field -->
-            <div class="form-group">
-                <label for="id_password1">Password</label>
-                <div class="password-wrapper">
-                    {{ form.password1 }}
-                    <button type="button" class="password-toggle" onclick="togglePassword('id_password1', this)">
-                        <i class="fas fa-eye"></i>
+        </div>
+        
+        <!-- Right Side: Sign Up Form -->
+        <div class="auth-form-side">
+            <div class="auth-card signup-card">
+                <div class="auth-header">
+                    <div class="logo-badge">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h2>Create Account</h2>
+                    <p>Join OpenCodeHub Now</p>
+                </div>
+                
+                <form method="post" class="signup-form">
+                    {% csrf_token %}
+                    
+                    <!-- Two Column Layout for Name Fields -->
+                    <div class="form-row">
+                        <!-- First Name Field -->
+                        <div class="form-group form-half">
+                            <label for="id_first_name">
+                                <i class="fas fa-user"></i> First Name
+                            </label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                                <div class="error-message">
+                                    {% for error in form.first_name.errors %}
+                                        <i class="fas fa-exclamation-circle"></i> {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Last Name Field -->
+                        <div class="form-group form-half">
+                            <label for="id_last_name">
+                                <i class="fas fa-user"></i> Last Name
+                            </label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                                <div class="error-message">
+                                    {% for error in form.last_name.errors %}
+                                        <i class="fas fa-exclamation-circle"></i> {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Two Column Layout for Username and Email -->
+                    <div class="form-row">
+                        <!-- Username Field -->
+                        <div class="form-group form-half">
+                            <label for="id_username">
+                                <i class="fas fa-at"></i> Username
+                            </label>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                                <div class="error-message">
+                                    {% for error in form.username.errors %}
+                                        <i class="fas fa-exclamation-circle"></i> {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Email Field -->
+                        <div class="form-group form-half">
+                            <label for="id_email">
+                                <i class="fas fa-envelope"></i> Email
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="error-message">
+                                    {% for error in form.email.errors %}
+                                        <i class="fas fa-exclamation-circle"></i> {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Security Question and Answer -->
+                    <div class="form-row">
+                        <!-- Security Question Field -->
+                        <div class="form-group form-half">
+                            <label for="id_security_question">
+                                <i class="fas fa-shield-alt"></i> Security Question
+                            </label>
+                            {{ form.security_question }}
+                            {% if form.security_question.errors %}
+                                <div class="error-message">
+                                    {% for error in form.security_question.errors %}
+                                        <i class="fas fa-exclamation-circle"></i> {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Security Answer Field -->
+                        <div class="form-group form-half">
+                            <label for="id_security_answer">
+                                <i class="fas fa-key"></i> Security Answer
+                            </label>
+                            {{ form.security_answer }}
+                            {% if form.security_answer.errors %}
+                                <div class="error-message">
+                                    {% for error in form.security_answer.errors %}
+                                        <i class="fas fa-exclamation-circle"></i> {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Password Fields -->
+                    <div class="form-row">
+                        <!-- Password Field -->
+                        <div class="form-group form-half">
+                            <label for="id_password1">
+                                <i class="fas fa-lock"></i> Password
+                            </label>
+                            <div class="password-wrapper">
+                                {{ form.password1 }}
+                                <button type="button" class="password-toggle" onclick="togglePassword('id_password1', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            {% if form.password1.errors %}
+                                <div class="error-message">
+                                    {% for error in form.password1.errors %}
+                                        <i class="fas fa-exclamation-circle"></i> {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Confirm Password Field -->
+                        <div class="form-group form-half">
+                            <label for="id_password2">
+                                <i class="fas fa-lock"></i> Confirm Password
+                            </label>
+                            <div class="password-wrapper">
+                                {{ form.password2 }}
+                                <button type="button" class="password-toggle" onclick="togglePassword('id_password2', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            {% if form.password2.errors %}
+                                <div class="error-message">
+                                    {% for error in form.password2.errors %}
+                                        <i class="fas fa-exclamation-circle"></i> {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Non-field errors -->
+                    {% if form.non_field_errors %}
+                        <div class="alert-error">
+                            {% for error in form.non_field_errors %}
+                                <i class="fas fa-exclamation-triangle"></i> {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <button type="submit" class="btn btn-ocean">
+                        <i class="fas fa-user-plus"></i> Create Account
                     </button>
-                </div>
-                {% if form.password1.errors %}
-                    <div class="error-message">
-                        {% for error in form.password1.errors %}
-                            {{ error }}
-                        {% endfor %}
+                </form>
+                
+                <div class="auth-links">
+                    <div class="divider">
+                        <span>Already have an account?</span>
                     </div>
-                {% endif %}
-            </div>
-            
-            <!-- Confirm Password Field -->
-            <div class="form-group">
-                <label for="id_password2">Confirm Password</label>
-                <div class="password-wrapper">
-                    {{ form.password2 }}
-                    <button type="button" class="password-toggle" onclick="togglePassword('id_password2', this)">
-                        <i class="fas fa-eye"></i>
-                    </button>
+                    <a href="{% url 'login' %}" class="btn btn-create-account">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </a>
                 </div>
-                {% if form.password2.errors %}
-                    <div class="error-message">
-                        {% for error in form.password2.errors %}
-                            {{ error }}
-                        {% endfor %}
-                    </div>
-                {% endif %}
             </div>
-            
-            <!-- Non-field errors -->
-            {% if form.non_field_errors %}
-                <div class="error-message">
-                    {% for error in form.non_field_errors %}
-                        {{ error }}
-                    {% endfor %}
-                </div>
-            {% endif %}
-            
-            <button type="submit" class="btn-submit">Sign In</button>
-        </form>
+        </div>
     </div>
 </div>
 
 <style>
-    .register-container {
+    /* Oceanic Background with Animated Orbs */
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #e0f7ff 0%, #f0fcff 50%, #e8f9f9 100%);
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    /* Animated Background Orbs */
+    .background-orbs {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(60px);
+        opacity: 0;
+        animation: fadeInOut 8s ease-in-out infinite;
+    }
+
+    .orb-1 {
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(0, 188, 212, 0.3), transparent);
+        top: 10%;
+        left: 15%;
+        animation-delay: 0s;
+    }
+
+    .orb-2 {
+        width: 350px;
+        height: 350px;
+        background: radial-gradient(circle, rgba(0, 150, 136, 0.25), transparent);
+        top: 60%;
+        right: 10%;
+        animation-delay: 2s;
+    }
+
+    .orb-3 {
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(0, 200, 180, 0.2), transparent);
+        bottom: 15%;
+        left: 10%;
+        animation-delay: 4s;
+    }
+
+    .orb-4 {
+        width: 450px;
+        height: 450px;
+        background: radial-gradient(circle, rgba(16, 185, 129, 0.2), transparent);
+        top: 30%;
+        right: 20%;
+        animation-delay: 1s;
+    }
+
+    .orb-5 {
+        width: 320px;
+        height: 320px;
+        background: radial-gradient(circle, rgba(20, 184, 166, 0.25), transparent);
+        bottom: 30%;
+        left: 40%;
+        animation-delay: 3s;
+    }
+
+    @keyframes fadeInOut {
+        0%, 100% {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    /* Auth Container */
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 80px);
+        padding: 40px 20px;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Split Layout */
+    .auth-split-layout {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 60px;
+        max-width: 1400px;
+        width: 100%;
+        align-items: center;
+    }
+
+    /* Left Side: Welcome Content */
+    .auth-welcome-side {
+        padding: 40px;
+    }
+
+    .welcome-content {
+        max-width: 500px;
+    }
+
+    .welcome-icon {
+        width: 90px;
+        height: 90px;
+        background: linear-gradient(135deg, #0288D1, #00BCD4, #009688);
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 100%;
-        padding: 40px 20px;
-        min-height: calc(100vh - 60px);
+        margin-bottom: 30px;
+        box-shadow: 0 15px 40px rgba(0, 150, 136, 0.3);
+        animation: float 3s ease-in-out infinite;
     }
 
-    .register-card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        padding: 48px 40px;
-        width: 100%;
-        max-width: 480px;
-        border: 1px solid #e5e5e5;
+    .welcome-icon i {
+        font-size: 42px;
+        color: white;
     }
 
-    .register-title {
-        font-size: 28px;
-        font-weight: 600;
-        color: #1a1a1a;
-        margin: 0 0 32px 0;
-        text-align: center;
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-15px); }
     }
 
-    .register-form {
+    .welcome-title {
+        font-size: 48px;
+        font-weight: 800;
+        background: linear-gradient(135deg, #0288D1, #00BCD4, #009688);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 15px;
+        line-height: 1.2;
+    }
+
+    .welcome-subtitle {
+        font-size: 20px;
+        color: #546e7a;
+        margin-bottom: 50px;
+        line-height: 1.6;
+    }
+
+    /* Feature Highlights */
+    .feature-highlights {
         display: flex;
         flex-direction: column;
+        gap: 25px;
+    }
+
+    .highlight-item {
+        display: flex;
+        align-items: flex-start;
         gap: 20px;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        transition: all 0.3s ease;
+    }
+
+    .highlight-item:hover {
+        transform: translateX(10px);
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 10px 30px rgba(0, 150, 136, 0.15);
+    }
+
+    .highlight-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #0288D1, #00BCD4);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 8px 20px rgba(0, 188, 212, 0.3);
+    }
+
+    .highlight-icon i {
+        font-size: 24px;
+        color: white;
+    }
+
+    .highlight-text h3 {
+        font-size: 20px;
+        font-weight: 700;
+        color: #0288D1;
+        margin: 0 0 8px 0;
+    }
+
+    .highlight-text p {
+        font-size: 15px;
+        color: #546e7a;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    /* Right Side: Form */
+    .auth-form-side {
+        display: flex;
+        justify-content: center;
+    }
+
+    .auth-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(0, 150, 136, 0.15);
+        padding: 40px 45px;
+        width: 100%;
+        max-width: 650px;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        position: relative;
+    }
+
+    .auth-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #0288D1, #00BCD4, #009688, #10B981);
+        border-radius: 24px 24px 0 0;
+    }
+
+    .logo-badge {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 20px;
+        background: linear-gradient(135deg, #0288D1, #00BCD4);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 30px rgba(0, 150, 136, 0.3);
+    }
+
+    .logo-badge i {
+        font-size: 32px;
+        color: white;
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .auth-header h2 {
+        background: linear-gradient(135deg, #0288D1, #009688);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 700;
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+
+    .auth-header p {
+        color: #546e7a;
+        font-size: 15px;
+    }
+
+    /* Form Styling */
+    .signup-form {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
     }
 
     .form-group {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+    }
+
+    .form-half {
+        width: 100%;
     }
 
     .form-group label {
-        font-size: 14px;
-        font-weight: 500;
-        color: #333;
-        margin-bottom: 4px;
+        display: block;
+        color: #0288D1;
+        font-weight: 600;
+        font-size: 13px;
+        margin-bottom: 6px;
     }
 
-    .form-group input {
+    .form-group label i {
+        margin-right: 5px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    select {
         width: 100%;
-        padding: 12px 16px;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
+        padding: 12px 14px;
+        border: 2px solid rgba(0, 188, 212, 0.2);
+        border-radius: 12px;
         font-size: 14px;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.9);
         color: #333;
-        background: #f8f8f8;
-        transition: all 0.2s ease;
         box-sizing: border-box;
     }
 
-    .form-group input:focus {
-        outline: none;
-        border-color: #6366f1;
-        background: white;
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    select {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%230288D1' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 35px;
     }
 
-    .form-group input::placeholder {
-        color: #999;
+    input[type="text"]:focus,
+    input[type="password"]:focus,
+    input[type="email"]:focus,
+    select:focus {
+        outline: none;
+        border-color: #00BCD4;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1);
     }
 
     .password-wrapper {
         position: relative;
         width: 100%;
-    }
-
-    .password-wrapper input {
-        padding-right: 45px;
     }
 
     .password-toggle {
@@ -231,7 +607,7 @@
         transform: translateY(-50%);
         background: none;
         border: none;
-        color: #999;
+        color: #0288D1;
         cursor: pointer;
         padding: 4px 8px;
         display: flex;
@@ -241,7 +617,7 @@
     }
 
     .password-toggle:hover {
-        color: #6366f1;
+        color: #00BCD4;
     }
 
     .password-toggle i {
@@ -249,39 +625,167 @@
     }
 
     .error-message {
-        color: #dc2626;
-        font-size: 13px;
-        margin-top: 4px;
+        color: #e53e3e;
+        font-size: 12px;
+        margin-top: 6px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
     }
 
-    .btn-submit {
-        width: 100%;
-        padding: 14px 24px;
-        background: #667eea;
-        color: white;
+    .alert-error {
+        background: rgba(229, 62, 62, 0.1);
+        border: 1px solid rgba(229, 62, 62, 0.3);
+        color: #e53e3e;
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Buttons */
+    .btn-ocean {
+        background: linear-gradient(135deg, #0288D1, #00BCD4, #009688);
         border: none;
-        border-radius: 8px;
-        font-size: 16px;
+        border-radius: 12px;
+        padding: 16px 24px;
         font-weight: 600;
+        font-size: 16px;
+        width: 100%;
+        color: #fff;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 150, 136, 0.3);
+        position: relative;
+        overflow: hidden;
         cursor: pointer;
-        transition: all 0.2s ease;
         margin-top: 8px;
     }
 
-    .btn-submit:hover {
-        background: white;
-        color: #667eea;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    .btn-ocean::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s;
     }
 
-    .btn-submit:active {
+    .btn-ocean:hover::before {
+        left: 100%;
+    }
+
+    .btn-ocean:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 150, 136, 0.4);
+    }
+
+    .btn-ocean:active {
         transform: translateY(0);
     }
 
-    /* Override base.html gradient background */
-    body {
-        background: #f5f5f5 !important;
+    .btn-create-account {
+        background: rgba(0, 188, 212, 0.1);
+        color: #0288D1;
+        border: 2px solid rgba(0, 188, 212, 0.3);
+        border-radius: 12px;
+        padding: 16px 24px;
+        width: 100%;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .btn-create-account:hover {
+        background: linear-gradient(135deg, #0288D1, #00BCD4);
+        color: white;
+        border-color: transparent;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 150, 136, 0.3);
+    }
+
+    /* Divider */
+    .divider {
+        margin: 25px 0 20px;
+        position: relative;
+        text-align: center;
+    }
+
+    .divider span {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 0 15px;
+        font-weight: 600;
+        color: #546e7a;
+        z-index: 1;
+        position: relative;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .divider:before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.3), transparent);
+        z-index: 0;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+        .auth-split-layout {
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+
+        .auth-welcome-side {
+            text-align: center;
+        }
+
+        .welcome-content {
+            max-width: 100%;
+        }
+
+        .welcome-icon {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .highlight-item {
+            justify-content: center;
+        }
+
+        .highlight-item:hover {
+            transform: translateY(-5px);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 18px;
+        }
+
+        .auth-card {
+            padding: 35px 30px;
+        }
+
+        .welcome-title {
+            font-size: 36px;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+        }
     }
 </style>
 

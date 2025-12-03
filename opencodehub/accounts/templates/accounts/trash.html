@@ -3,128 +3,522 @@
 {% block title %}Trash - OpenCodeHub{% endblock %}
 
 {% block content %}
-<div class="main-layout">
-    <!-- Left Sidebar (same as home.html) -->
-    <div class="left-sidebar">
-        <div class="create-btn" onclick="toggleCreateDropdown()">
-            <i class="fas fa-plus"></i>
-            Create
-            <div class="create-dropdown" id="createDropdown">
-                <a href="{% url 'create_project' %}" class="create-dropdown-item">New Folder</a>
-                <a href="#" class="create-dropdown-item" onclick="event.preventDefault(); alert('Upload from home page')">Upload File</a>
-                <a href="#" class="create-dropdown-item" onclick="event.preventDefault(); alert('Upload from home page')">Upload Folder</a>
-                <a href="{% url 'create_document' %}" class="create-dropdown-item">Document</a>
-            </div>
-        </div>
+<style>
+    /* Override main-content padding for trash page */
+    .main-content {
+        padding: 24px 48px 40px 48px;
+    }
 
-        <div class="sidebar-section">
-            <div class="sidebar-section-title">Working space</div>
-            <a href="{% url 'home' %}" class="sidebar-item">
-                <i class="fas fa-home"></i>
-                Home
-            </a>
-            <a href="{% url 'my_projects' %}" class="sidebar-item">
-                <i class="fas fa-briefcase"></i>
-                My work
-            </a>
-            <a href="{% url 'shared_with_me' %}" class="sidebar-item">
-                <i class="fas fa-user-friends"></i>
-                Shared with me
-            </a>
-            <a href="#" class="sidebar-item">
-                <i class="fas fa-clock"></i>
-                Recent
-            </a>
-            <a href="{% url 'browse_projects' %}" class="sidebar-item">
-                <i class="fas fa-globe"></i>
-                Browse
-            </a>
-        </div>
+    .content-header {
+        margin-bottom: 32px;
+    }
 
-        <div class="sidebar-section">
-            <div class="sidebar-section-title">Personal</div>
-            <a href="#" class="sidebar-item">
-                <i class="fas fa-comment-alt"></i>
-                Messages
-                <span class="badge">N</span>
-            </a>
-            <a href="#" class="sidebar-item">
-                <i class="fas fa-bell"></i>
-                Notifications
-            </a>
-            <a href="#" class="sidebar-item">
-                <i class="fas fa-cog"></i>
-                Setting
-            </a>
-            <a href="{% url 'trash' %}" class="sidebar-item active">
-                <i class="fas fa-trash"></i>
-                Trash
-            </a>
-        </div>
-    </div>
+    .content-header h1 {
+        font-size: 42px;
+        font-weight: 800;
+        background: linear-gradient(135deg, #dc3545 0%, #e74c3c 50%, #c0392b 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0 0 12px 0;
+        letter-spacing: -0.5px;
+    }
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="content-header" style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <h1>Trash</h1>
-                <p style="color: #86868b; font-size: 14px; margin-top: 8px;">
-                    Items in trash will be permanently deleted after 30 days
-                </p>
-            </div>
-            {% if projects %}
-            <button onclick="emptyTrash()" class="btn-danger" style="padding: 10px 20px; background: #dc3545; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">
-                <i class="fas fa-trash-alt"></i> Empty Trash
-            </button>
-            {% endif %}
+    .content-header h1 i {
+        background: linear-gradient(135deg, #dc3545 0%, #e74c3c 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .content-header p {
+        color: #64748b;
+        font-size: 16px;
+        margin: 0;
+        font-weight: 500;
+    }
+
+    .header-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+    }
+
+    .btn-empty-trash {
+        padding: 14px 28px;
+        background: linear-gradient(135deg, #dc3545 0%, #c0392b 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 15px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 16px rgba(220, 53, 69, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-empty-trash:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(220, 53, 69, 0.4);
+    }
+
+    .btn-empty-trash:active {
+        transform: translateY(0);
+    }
+
+    /* Trash Items Grid */
+    .trash-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+        gap: 24px;
+        padding: 8px;
+    }
+
+    .trash-item {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 28px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid rgba(220, 53, 69, 0.15);
+        box-shadow: 0 4px 16px rgba(220, 53, 69, 0.08);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .trash-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #dc3545 0%, #e74c3c 50%, #c0392b 100%);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .trash-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px rgba(220, 53, 69, 0.2);
+        border-color: rgba(220, 53, 69, 0.3);
+    }
+
+    .trash-item:hover::before {
+        transform: scaleX(1);
+    }
+
+    .trash-item-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .trash-item-icon {
+        width: 56px;
+        height: 56px;
+        background: linear-gradient(135deg, #dc3545 0%, #e74c3c 50%, #c0392b 100%);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .trash-item:hover .trash-item-icon {
+        transform: rotate(-5deg) scale(1.05);
+        box-shadow: 0 6px 16px rgba(220, 53, 69, 0.4);
+    }
+
+    .trash-item-title {
+        font-size: 19px;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0;
+        line-height: 1.3;
+        word-break: break-word;
+    }
+
+    .trash-item-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 20px 0;
+        border-top: 2px solid rgba(220, 53, 69, 0.1);
+        border-bottom: 2px solid rgba(220, 53, 69, 0.1);
+        margin-bottom: 20px;
+    }
+
+    .meta-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 14px;
+    }
+
+    .meta-label {
+        color: #64748b;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .meta-label i {
+        width: 20px;
+        text-align: center;
+        color: #94a3b8;
+    }
+
+    .meta-value {
+        color: #1e293b;
+        font-weight: 600;
+    }
+
+    .trash-item-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn-restore {
+        flex: 1;
+        padding: 12px 20px;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-restore:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(40, 167, 69, 0.35);
+    }
+
+    .btn-restore:active {
+        transform: translateY(0);
+    }
+
+    .btn-delete-forever {
+        flex: 1;
+        padding: 12px 20px;
+        background: linear-gradient(135deg, #dc3545 0%, #c0392b 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-delete-forever:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(220, 53, 69, 0.35);
+    }
+
+    .btn-delete-forever:active {
+        transform: translateY(0);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 100px 20px;
+        color: #64748b;
+    }
+
+    .empty-state i {
+        font-size: 80px;
+        margin-bottom: 24px;
+        background: linear-gradient(135deg, #dc3545 0%, #e74c3c 50%, #c0392b 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        opacity: 0.4;
+    }
+
+    .empty-state h3 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        color: #1e293b;
+    }
+
+    .empty-state p {
+        font-size: 16px;
+        color: #64748b;
+    }
+
+    /* Override Right Sidebar for trash page */
+    .right-sidebar {
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(10px);
+        border-left: 2px solid rgba(220, 53, 69, 0.1);
+    }
+
+    .right-sidebar .timeline-header {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 24px;
+    }
+
+    .info-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        padding: 20px;
+        border-radius: 16px;
+        margin-bottom: 16px;
+        border: 2px solid rgba(220, 53, 69, 0.1);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.08);
+    }
+
+    .info-card h4 {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #1e293b;
+    }
+
+    .info-card h4 i {
+        background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .info-card p {
+        font-size: 14px;
+        color: #64748b;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .warning-card {
+        background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 152, 0, 0.05) 100%);
+        border-color: rgba(255, 193, 7, 0.3);
+    }
+
+    .warning-card h4 {
+        color: #f57c00;
+    }
+
+    .warning-card h4 i {
+        background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .warning-card p {
+        color: #f57c00;
+        font-weight: 500;
+    }
+
+    /* Modals */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .modal-overlay.show {
+        display: flex;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 20px;
+        padding: 32px;
+        max-width: 480px;
+        width: 90%;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .modal-content h3 {
+        margin: 0 0 16px 0;
+        font-size: 22px;
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .modal-content p {
+        color: #dc3545;
+        font-size: 15px;
+        margin-bottom: 28px;
+        line-height: 1.6;
+        font-weight: 600;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+    }
+
+    .btn-modal {
+        padding: 12px 28px;
+        border: none;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-cancel {
+        background: rgba(0, 0, 0, 0.05);
+        color: #1e293b;
+    }
+
+    .btn-cancel:hover {
+        background: rgba(0, 0, 0, 0.1);
+        transform: translateY(-1px);
+    }
+
+    .btn-confirm {
+        background: linear-gradient(135deg, #dc3545 0%, #c0392b 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    }
+
+    .btn-confirm:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(220, 53, 69, 0.4);
+    }
+
+    .btn-confirm-restore {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    }
+
+    .btn-confirm-restore:hover {
+        box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .main-content {
+            padding: 24px 20px;
+        }
+
+        .trash-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .right-sidebar {
+            display: none;
+        }
+    }
+</style>
+
+<!-- Main Content (Left sidebar inherited from home_base.html) -->
+        <div class="content-header">
+            <h1><i class="fas fa-trash"></i> Trash</h1>
+            <p>Items in trash will be permanently deleted after 30 days</p>
         </div>
 
         {% if projects %}
-        <div class="projects-table">
-            <div class="table-header">
-                <div></div>
-                <div>NAME</div>
-                <div>DELETED</div>
-                <div>ORIGINAL LOCATION</div>
-                <div></div>
-            </div>
+        <div class="header-actions">
+            <div></div>
+            <button onclick="emptyTrash()" class="btn-empty-trash">
+                <i class="fas fa-trash-alt"></i>
+                Empty Trash
+            </button>
+        </div>
 
+        <div class="trash-grid">
             {% for project in projects %}
-            <div class="project-row">
-                <div class="project-icon">
-                    <i class="fas fa-folder" style="color: #86868b;"></i>
+            <div class="trash-item">
+                <div class="trash-item-header">
+                    <div class="trash-item-icon">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                    <h3 class="trash-item-title">{{ project.title }}</h3>
                 </div>
-                <div class="project-name">
-                    {{ project.title }}
+
+                <div class="trash-item-meta">
+                    <div class="meta-row">
+                        <span class="meta-label">
+                            <i class="fas fa-clock"></i>
+                            Deleted
+                        </span>
+                        <span class="meta-value">{{ project.deleted_at|timesince }} ago</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">
+                            <i class="fas fa-folder-open"></i>
+                            Location
+                        </span>
+                        <span class="meta-value">My work</span>
+                    </div>
                 </div>
-                <div class="project-time">
-                    {{ project.deleted_at|timesince }} ago
-                </div>
-                <div class="project-type">
-                    My work
-                </div>
-                <div class="project-menu" style="display: flex; gap: 8px;">
-                    <button onclick="restoreProject({{ project.id }}, '{{ project.title|escapejs }}')" 
-                            class="btn-restore" 
-                            style="padding: 8px 16px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px;">
-                        <i class="fas fa-undo"></i> Restore
+
+                <div class="trash-item-actions">
+                    <button onclick="restoreProject({{ project.id }}, '{{ project.title|escapejs }}')" class="btn-restore">
+                        <i class="fas fa-undo"></i>
+                        Restore
                     </button>
-                    <button onclick="deleteForever({{ project.id }}, '{{ project.title|escapejs }}')" 
-                            class="btn-delete" 
-                            style="padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px;">
-                        <i class="fas fa-trash"></i> Delete Forever
+                    <button onclick="deleteForever({{ project.id }}, '{{ project.title|escapejs }}')" class="btn-delete-forever">
+                        <i class="fas fa-times"></i>
+                        Delete Forever
                     </button>
                 </div>
             </div>
             {% endfor %}
         </div>
         {% else %}
-        <div class="projects-table">
-            <div class="empty-state">
-                <i class="fas fa-trash" style="font-size: 4rem; color: #ddd;"></i>
-                <h3>Trash is empty</h3>
-                <p>Items you delete will appear here</p>
-            </div>
+        <div class="empty-state">
+            <i class="fas fa-trash"></i>
+            <h3>Trash is empty</h3>
+            <p>Items you delete will appear here</p>
         </div>
         {% endif %}
     </div>
@@ -132,22 +526,24 @@
     <!-- Right Sidebar - Info -->
     <div class="right-sidebar">
         <div class="timeline-header">Trash Info</div>
-        <div class="timeline" style="padding: 20px;">
-            <div style="background: #f8f9fa; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
-                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">
-                    <i class="fas fa-info-circle" style="color: #667eea;"></i> About Trash
+        <div class="timeline">
+            <div class="info-card">
+                <h4>
+                    <i class="fas fa-info-circle"></i>
+                    About Trash
                 </h4>
-                <p style="font-size: 13px; color: #666; line-height: 1.6;">
+                <p>
                     Deleted items are kept in trash for 30 days before being permanently deleted. You can restore or permanently delete them anytime.
                 </p>
             </div>
             
             {% if projects %}
-            <div style="background: #fff3cd; padding: 16px; border-radius: 12px; border-left: 4px solid #ffc107;">
-                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #856404;">
-                    <i class="fas fa-exclamation-triangle"></i> Warning
+            <div class="info-card warning-card">
+                <h4>
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Warning
                 </h4>
-                <p style="font-size: 13px; color: #856404; line-height: 1.6;">
+                <p>
                     You have {{ projects.count }} item{{ projects.count|pluralize }} in trash. Empty trash to permanently delete all items.
                 </p>
             </div>
@@ -157,62 +553,48 @@
 </div>
 
 <!-- Delete Forever Confirmation Modal -->
-<div id="deletePermanentModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
-    <div style="background: white; border-radius: 12px; padding: 24px; max-width: 450px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
-        <h3 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: #1d1d1f;">
-            Permanently delete "<span id="deletePermanentName"></span>"?
-        </h3>
-        
-        <p style="color: #dc3545; font-size: 14px; margin-bottom: 24px; line-height: 1.5; font-weight: 500;">
-            This action CANNOT be undone!
-        </p>
-        
-        <div style="display: flex; gap: 12px; justify-content: flex-end;">
-            <button type="button" onclick="closeDeletePermanentModal()" style="padding: 10px 20px; background: #f0f0f0; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; color: #333;">
+<div id="deletePermanentModal" class="modal-overlay">
+    <div class="modal-content">
+        <h3>Permanently delete "<span id="deletePermanentName"></span>"?</h3>
+        <p>⚠️ This action CANNOT be undone! The project will be permanently deleted.</p>
+        <div class="modal-actions">
+            <button type="button" onclick="closeDeletePermanentModal()" class="btn-modal btn-cancel">
                 Cancel
             </button>
-            <button type="button" onclick="proceedDeletePermanent()" style="padding: 10px 20px; background: #dc3545; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;">
-                OK
+            <button type="button" onclick="proceedDeletePermanent()" class="btn-modal btn-confirm">
+                Delete Forever
             </button>
         </div>
     </div>
 </div>
 
 <!-- Empty Trash Confirmation Modal -->
-<div id="emptyTrashModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
-    <div style="background: white; border-radius: 12px; padding: 24px; max-width: 450px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
-        <h3 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: #1d1d1f;">
-            Empty entire trash?
-        </h3>
-        
-        <p style="color: #dc3545; font-size: 14px; margin-bottom: 24px; line-height: 1.5; font-weight: 500;">
-            ALL items will be PERMANENTLY DELETED! This cannot be undone!
-        </p>
-        
-        <div style="display: flex; gap: 12px; justify-content: flex-end;">
-            <button type="button" onclick="closeEmptyTrashModal()" style="padding: 10px 20px; background: #f0f0f0; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; color: #333;">
+<div id="emptyTrashModal" class="modal-overlay">
+    <div class="modal-content">
+        <h3>Empty entire trash?</h3>
+        <p>⚠️ ALL items will be PERMANENTLY DELETED! This cannot be undone!</p>
+        <div class="modal-actions">
+            <button type="button" onclick="closeEmptyTrashModal()" class="btn-modal btn-cancel">
                 Cancel
             </button>
-            <button type="button" onclick="proceedEmptyTrash()" style="padding: 10px 20px; background: #dc3545; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;">
-                OK
+            <button type="button" onclick="proceedEmptyTrash()" class="btn-modal btn-confirm">
+                Empty Trash
             </button>
         </div>
     </div>
 </div>
 
 <!-- Restore Confirmation Modal -->
-<div id="restoreModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
-    <div style="background: white; border-radius: 12px; padding: 24px; max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
-        <h3 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: #1d1d1f;">
-            Restore "<span id="restoreProjectName"></span>"?
-        </h3>
-        
-        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
-            <button type="button" onclick="closeRestoreModal()" style="padding: 10px 20px; background: #f0f0f0; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; color: #333;">
+<div id="restoreModal" class="modal-overlay">
+    <div class="modal-content">
+        <h3>Restore "<span id="restoreProjectName"></span>"?</h3>
+        <p style="color: #28a745;">This project will be restored to its original location.</p>
+        <div class="modal-actions">
+            <button type="button" onclick="closeRestoreModal()" class="btn-modal btn-cancel">
                 Cancel
             </button>
-            <button type="button" onclick="proceedRestore()" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;">
-                OK
+            <button type="button" onclick="proceedRestore()" class="btn-modal btn-confirm btn-confirm-restore">
+                Restore
             </button>
         </div>
     </div>
@@ -228,11 +610,11 @@ function restoreProject(projectId, projectName) {
     restoreProjectName = projectName;
     
     document.getElementById('restoreProjectName').textContent = projectName;
-    document.getElementById('restoreModal').style.display = 'flex';
+    document.getElementById('restoreModal').classList.add('show');
 }
 
 function closeRestoreModal() {
-    document.getElementById('restoreModal').style.display = 'none';
+    document.getElementById('restoreModal').classList.remove('show');
     restoreProjectId = null;
     restoreProjectName = null;
 }
@@ -264,11 +646,11 @@ function deleteForever(projectId, projectName) {
     deletePermanentName = projectName;
     
     document.getElementById('deletePermanentName').textContent = projectName;
-    document.getElementById('deletePermanentModal').style.display = 'flex';
+    document.getElementById('deletePermanentModal').classList.add('show');
 }
 
 function closeDeletePermanentModal() {
-    document.getElementById('deletePermanentModal').style.display = 'none';
+    document.getElementById('deletePermanentModal').classList.remove('show');
     deletePermanentId = null;
     deletePermanentName = null;
 }
@@ -293,11 +675,11 @@ function proceedDeletePermanent() {
 
 // Empty Trash
 function emptyTrash() {
-    document.getElementById('emptyTrashModal').style.display = 'flex';
+    document.getElementById('emptyTrashModal').classList.add('show');
 }
 
 function closeEmptyTrashModal() {
-    document.getElementById('emptyTrashModal').style.display = 'none';
+    document.getElementById('emptyTrashModal').classList.remove('show');
 }
 
 function proceedEmptyTrash() {

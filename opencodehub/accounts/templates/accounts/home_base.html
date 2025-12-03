@@ -979,12 +979,6 @@
             </div>
         </div>
         <div class="navbar-right">
-            <div class="nav-icon">
-                <i class="fas fa-cog"></i>
-            </div>
-            <div class="nav-icon">
-                <i class="fas fa-bell"></i>
-            </div>
             <div class="user-avatar" onclick="toggleProfileDropdown()">
                 {% if user.profile_picture %}
                     <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">

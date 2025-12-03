@@ -4,149 +4,251 @@
 
 {% block content %}
 <style>
+    body {
+        background: rgba(255, 255, 255, 0.8);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        min-height: 100vh;
+    }
+
+    /* Main Content */
+    .main-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 40px 48px;
+    }
+
     .content-header {
-        margin-bottom: 32px;
+        margin-bottom: 40px;
+        text-align: center;
     }
 
     .content-header h1 {
-        font-size: 32px;
-        font-weight: 700;
-        color: #1d1d1f;
-        margin: 0 0 8px 0;
+        font-size: 42px;
+        font-weight: 800;
+        background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 50%, #14b8a6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0 0 12px 0;
+        letter-spacing: -0.5px;
+    }
+
+    .content-header h1 i {
+        background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
     .content-header p {
-        color: #86868b;
-        font-size: 14px;
+        color: #64748b;
+        font-size: 16px;
         margin: 0;
+        font-weight: 500;
     }
 
-    /* Projects Table */
-    .projects-table {
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
-
-    .table-header {
+    /* Projects Grid */
+    .projects-grid {
         display: grid;
-        grid-template-columns: 40px 2fr 180px 150px 120px 40px;
-        padding: 16px 20px;
-        background: #fafafa;
-        border-bottom: 1px solid #e5e5e5;
-        font-size: 12px;
-        font-weight: 600;
-        color: #86868b;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 24px;
+        padding: 8px;
     }
 
-    .project-row {
-        display: grid;
-        grid-template-columns: 40px 2fr 180px 150px 120px 40px;
-        padding: 16px 20px;
-        border-bottom: 1px solid #f0f0f0;
-        align-items: center;
-        transition: background 0.2s;
+    .project-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 24px;
         cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid rgba(6, 182, 212, 0.15);
+        box-shadow: 0 4px 16px rgba(6, 182, 212, 0.08);
+        position: relative;
+        overflow: hidden;
     }
 
-    .project-row:hover {
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    .project-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #3b82f6 0%, #06b6d4 50%, #14b8a6 100%);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
     }
 
-    .project-row:last-child {
-        border-bottom: none;
+    .project-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 32px rgba(6, 182, 212, 0.2);
+        border-color: rgba(6, 182, 212, 0.3);
+    }
+
+    .project-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .project-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 16px;
     }
 
     .project-icon {
-        font-size: 20px;
-        color: #667eea;
-    }
-
-    .project-name {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 14px;
-        font-weight: 500;
-        color: #1d1d1f;
-    }
-
-    .project-owner {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 13px;
-        color: #86868b;
-    }
-
-    .owner-avatar {
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 50%, #14b8a6 100%);
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 11px;
-        font-weight: 600;
+        color: white;
+        font-size: 20px;
+        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+        transition: all 0.3s ease;
     }
 
-    .project-time {
-        font-size: 13px;
-        color: #86868b;
+    .project-card:hover .project-icon {
+        transform: rotate(-5deg) scale(1.1);
+        box-shadow: 0 6px 16px rgba(6, 182, 212, 0.4);
+    }
+
+    .project-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0;
+        line-height: 1.3;
+        flex: 1;
+    }
+
+    .project-description {
+        color: #64748b;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 42px;
+    }
+
+    .project-meta {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
     }
 
     .project-badge {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
-        padding: 4px 12px;
-        background: #e8f0fe;
-        color: #667eea;
+        gap: 6px;
+        padding: 6px 12px;
         border-radius: 12px;
         font-size: 11px;
         font-weight: 600;
+        border: 1px solid;
+        transition: all 0.2s ease;
     }
 
-    .project-menu {
-        color: #86868b;
-        cursor: pointer;
-        padding: 4px;
-        border-radius: 4px;
-        transition: all 0.2s;
+    .badge-edit {
+        background: rgba(14, 165, 233, 0.1);
+        color: #0ea5e9;
+        border-color: rgba(14, 165, 233, 0.2);
     }
 
-    .project-menu:hover {
-        background: #f0f0f0;
-        color: #667eea;
+    .badge-view {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+        border-color: rgba(59, 130, 246, 0.2);
+    }
+
+    .project-card:hover .project-badge {
+        transform: translateY(-2px);
+    }
+
+    .project-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 16px;
+        border-top: 2px solid rgba(6, 182, 212, 0.1);
+    }
+
+    .project-owner {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    .owner-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #06b6d4 0%, #14b8a6 50%, #10b981 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        border: 2px solid white;
+        box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);
+    }
+
+    .project-time {
+        font-size: 12px;
+        color: #94a3b8;
+        font-weight: 500;
     }
 
     .empty-state {
         text-align: center;
-        padding: 60px 20px;
-        color: #86868b;
+        padding: 80px 20px;
+        color: #64748b;
     }
 
     .empty-state i {
-        font-size: 48px;
-        margin-bottom: 16px;
-        opacity: 0.3;
-        color: #667eea;
+        font-size: 64px;
+        margin-bottom: 20px;
+        background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 50%, #14b8a6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        opacity: 0.4;
     }
 
     .empty-state h3 {
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 8px;
-        color: #1d1d1f;
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        color: #1e293b;
     }
 
     .empty-state p {
-        font-size: 14px;
+        font-size: 16px;
+        color: #64748b;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .main-content {
+            padding: 24px 20px;
+        }
+
+        .content-header h1 {
+            font-size: 32px;
+        }
+
+        .projects-grid {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 
@@ -156,65 +258,61 @@
 </div>
 
 {% if projects %}
-    <div class="projects-table">
-        <div class="table-header">
-            <div></div>
-            <div>NAME</div>
-            <div>SHARED BY</div>
-            <div>LAST MODIFIED</div>
-            <div>ACCESS</div>
-            <div></div>
-        </div>
-
+    <div class="projects-grid">
         {% for project in projects %}
-        <div class="project-row" data-href="{% url 'project_detail' project.id %}">
-            <div class="project-icon">
-                <i class="fas fa-users"></i>
-            </div>
-            <div class="project-name">
-                {{ project.title }}
-            </div>
-            <div class="project-owner">
-                <div class="owner-avatar">
-                    {{ project.owner.first_name.0|upper }}{{ project.owner.last_name.0|upper }}
+        <div class="project-card" data-href="{% url 'project_detail' project.id %}">
+            <div class="project-header">
+                <div class="project-icon">
+                    <i class="fas fa-users"></i>
                 </div>
-                <span>{{ project.owner.first_name }} {{ project.owner.last_name }}</span>
+                <h3 class="project-title">{{ project.title }}</h3>
             </div>
-            <div class="project-time">{{ project.updated_at|timesince }} ago</div>
-            <div>
+            
+            <div class="project-meta">
                 {% if project.permission == 'edit' %}
-                <span class="project-badge" style="background: #d4edda; color: #155724;">
+                <span class="project-badge badge-edit">
                     <i class="fas fa-edit"></i>
                     Can Edit
                 </span>
                 {% else %}
-                <span class="project-badge" style="background: #d1ecf1; color: #0c5460;">
+                <span class="project-badge badge-view">
                     <i class="fas fa-eye"></i>
                     View Only
                 </span>
                 {% endif %}
             </div>
-            <div class="project-menu">
-                <i class="fas fa-ellipsis-v"></i>
+            
+            <p class="project-description">
+                {{ project.description|default:"No description provided" }}
+            </p>
+            
+            <div class="project-footer">
+                <div class="project-owner">
+                    <div class="owner-avatar">
+                        {{ project.owner.first_name.0|upper }}{{ project.owner.last_name.0|upper }}
+                    </div>
+                    <span>{{ project.owner.first_name }} {{ project.owner.last_name }}</span>
+                </div>
+                <div class="project-time">
+                    {{ project.updated_at|timesince }} ago
+                </div>
             </div>
         </div>
         {% endfor %}
     </div>
 {% else %}
-    <div class="projects-table">
-        <div class="empty-state">
-            <i class="fas fa-users"></i>
-            <h3>No shared projects</h3>
-            <p>When someone shares a project with you, it will appear here</p>
-        </div>
+    <div class="empty-state">
+        <i class="fas fa-users"></i>
+        <h3>No shared projects</h3>
+        <p>When someone shares a project with you, it will appear here</p>
     </div>
 {% endif %}
 
 <script>
-document.querySelectorAll('.project-row').forEach(row => {
-    row.style.cursor = 'pointer';
-    row.addEventListener('click', () => {
-        window.location.href = row.dataset.href;
+document.querySelectorAll('.project-card').forEach(card => {
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', () => {
+        window.location.href = card.dataset.href;
     });
 });
 </script>
