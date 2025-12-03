@@ -4,19 +4,10 @@
 
 {% block content %}
 <style>
-    body {
-        background: rgba(255, 255, 255, 0.8);
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        min-height: 100vh;
-    }
-
-    /* Main Content */
-    .main-content {
-        flex: 1;
-        overflow-y: auto;
-        padding: 40px 48px;
-    }
-
+    /* DO NOT redefine .main-content - it's already in base template! */
+    
+    /* Only define page-specific styles */
+    
     .content-header {
         margin-bottom: 40px;
         text-align: center;
@@ -319,12 +310,30 @@
         color: inherit;
     }
 
+    /* Dark mode styles */
+    body.dark-mode .project-card {
+        background: rgba(26, 26, 46, 0.9);
+        border-color: rgba(14, 165, 233, 0.15);
+    }
+
+    body.dark-mode .project-title {
+        color: #e4e4e7;
+    }
+
+    body.dark-mode .project-description {
+        color: #9ca3af;
+    }
+
+    body.dark-mode .empty-state h3 {
+        color: #e4e4e7;
+    }
+
+    body.dark-mode .empty-state p {
+        color: #9ca3af;
+    }
+
     /* Responsive Design */
     @media (max-width: 768px) {
-        .main-content {
-            padding: 24px 20px;
-        }
-
         .content-header h1 {
             font-size: 32px;
         }

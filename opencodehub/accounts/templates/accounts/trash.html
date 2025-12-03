@@ -271,7 +271,7 @@
 
     /* Override Right Sidebar for trash page */
     .right-sidebar {
-        background: rgba(255, 255, 255, 0.5);
+        background: linear-gradient(135deg, #e0f2fe 10%, #ecfeff 30%, #f0fdfa 30%);
         backdrop-filter: blur(10px);
         border-left: 2px solid rgba(220, 53, 69, 0.1);
     }
@@ -521,34 +521,6 @@
             <p>Items you delete will appear here</p>
         </div>
         {% endif %}
-    </div>
-
-    <!-- Right Sidebar - Info -->
-    <div class="right-sidebar">
-        <div class="timeline-header">Trash Info</div>
-        <div class="timeline">
-            <div class="info-card">
-                <h4>
-                    <i class="fas fa-info-circle"></i>
-                    About Trash
-                </h4>
-                <p>
-                    Deleted items are kept in trash for 30 days before being permanently deleted. You can restore or permanently delete them anytime.
-                </p>
-            </div>
-            
-            {% if projects %}
-            <div class="info-card warning-card">
-                <h4>
-                    <i class="fas fa-exclamation-triangle"></i>
-                    Warning
-                </h4>
-                <p>
-                    You have {{ projects.count }} item{{ projects.count|pluralize }} in trash. Empty trash to permanently delete all items.
-                </p>
-            </div>
-            {% endif %}
-        </div>
     </div>
 </div>
 

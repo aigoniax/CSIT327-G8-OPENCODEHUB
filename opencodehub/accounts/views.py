@@ -600,9 +600,20 @@ def my_projects(request):
             Q(description__icontains=search_query)
         )
     
+    # Get recent activities (last 5 projects updated)
+    recent_activities = []
+    for project in projects[:5]:
+        local_time = timezone.localtime(project.updated_at)
+        recent_activities.append({
+            'time': f"{local_time.strftime('%I:%M %p')}",
+            'project_name': project.title,
+            'description': f'Updated {local_time.strftime("%B %d, %Y")}'
+        })
+    
     context = {
         'projects': projects,
         'search_query': search_query,
+        'recent_activities': recent_activities, 
     }
     
     return render(request, 'accounts/my_projects.html', context)
@@ -627,11 +638,22 @@ def browse_projects(request):
             Q(owner__last_name__icontains=search_query) |
             Q(owner__username__icontains=search_query)
         )
+
+    # Get recent activities (last 5 projects updated)
+    recent_activities = []
+    for project in projects[:5]:
+        local_time = timezone.localtime(project.updated_at)
+        recent_activities.append({
+            'time': f"{local_time.strftime('%I:%M %p')}",
+            'project_name': project.title,
+            'description': f'Updated {local_time.strftime("%B %d, %Y")}'
+        })
     
     context = {
         'projects': projects,
         'search_query': search_query,
-        'total_count': projects.count()
+        'total_count': projects.count(),
+        'recent_activities': recent_activities, 
     }
     
     return render(request, 'accounts/browse_projects.html', context)
@@ -664,11 +686,22 @@ def shared_with_me(request):
         
         project.permission = entry.permission
         projects_with_permissions.append(project)
+
+    # Get recent activities (last 5 projects updated) - FIXED: Use correct variable name
+    recent_activities = []
+    for project in projects_with_permissions[:5]:  # Changed from projects[:5]
+        local_time = timezone.localtime(project.updated_at)
+        recent_activities.append({
+            'time': f"{local_time.strftime('%I:%M %p')}",
+            'project_name': project.title,
+            'description': f'Updated {local_time.strftime("%B %d, %Y")}'
+        })
     
     context = {
         'projects': projects_with_permissions,
         'total_count': len(projects_with_permissions),
         'search_query': search_query,
+        'recent_activities': recent_activities, 
     }
     
     return render(request, 'accounts/shared_with_me.html', context)
@@ -737,11 +770,22 @@ def shared_by_me(request):
             'contributors': contributors
         }
     
+    # Get recent activities (last 5 projects updated)
+    recent_activities = []
+    for project in projects[:5]:
+        local_time = timezone.localtime(project.updated_at)
+        recent_activities.append({
+            'time': f"{local_time.strftime('%I:%M %p')}",
+            'project_name': project.title,
+            'description': f'Updated {local_time.strftime("%B %d, %Y")}'
+        })
+    
     context = {
         'projects': projects,
         'total_count': projects.count(),
         'search_query': search_query,
         'projects_contribution_data': json.dumps(projects_contribution_data),
+        'recent_activities': recent_activities,
     }
     
     return render(request, 'accounts/shared_by_me.html', context)
@@ -1487,13 +1531,31 @@ def move_to_trash(request, project_id):
 @login_required
 def trash(request):
     """View deleted projects"""
+    # Get user's projects
+    projects = Project.objects.filter(
+        owner=request.user,
+        is_deleted=False  
+    ).order_by('-updated_at')
+    
+
     deleted_projects = Project.objects.filter(
         owner=request.user,
         is_deleted=True
     ).order_by('-deleted_at')
+
+    # Get recent activities (last 5 projects updated)
+    recent_activities = []
+    for project in projects[:5]:
+        local_time = timezone.localtime(project.updated_at)
+        recent_activities.append({
+            'time': f"{local_time.strftime('%I:%M %p')}",
+            'project_name': project.title,
+            'description': f'Updated {local_time.strftime("%B %d, %Y")}'
+        })
     
     context = {
         'projects': deleted_projects,
+        'recent_activities' : recent_activities,
     }
     
     return render(request, 'accounts/trash.html', context)
